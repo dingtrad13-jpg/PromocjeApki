@@ -8,89 +8,51 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,sans-serif}
-  body{min-height:100vh}
-  .muted{color:#93a0b8}
-  .panel{background:linear-gradient(145deg,#151d2e,#0d1320);border:1px solid rgba(148,163,184,.18);border-radius:18px;box-shadow:0 12px 30px rgba(7,10,18,.25)}
-  .hidden{display:none!important}
-  .auth-shell{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at top,#111827 0%,#080b14 38%,#050814 100%);padding:24px}
-  .auth-panel{width:min(1100px,100%);display:grid;grid-template-columns:1.15fr .85fr;background:rgba(15,23,42,.86);border:1px solid rgba(148,163,184,.18);border-radius:32px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,.75)}
-  .brand-panel{padding:42px 38px;background:linear-gradient(135deg,#111827,#090d17 35%,#0d1320);position:relative;overflow:hidden}
-  .brand-panel::before{content:"";position:absolute;inset:-20% auto auto -10%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#8b5cf6 0%,rgba(139,92,246,.2) 40%,transparent 70%);filter:blur(10px);opacity:.8}
-  .brand-panel::after{content:"";position:absolute;right:-120px;bottom:-100px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,#3b82f6 0%,rgba(59,130,246,.18) 35%,transparent 72%);filter:blur(10px)}
-  .brand-inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between}
-  .brand-top{display:flex;align-items:center;gap:12px}
-  .brand-badge{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:grid;place-items:center;font-size:20px;box-shadow:0 12px 30px rgba(139,92,246,.35)}
-  .brand-title{font-size:1.8rem;font-weight:800;letter-spacing:.04em}
-  .brand-copy{margin-top:28px;max-width:420px}
-  .brand-copy h2{font-size:clamp(2.3rem,4vw,4rem);line-height:1.05;margin:0 0 18px;font-weight:900}
-  .brand-copy p{color:#cbd5e1;line-height:1.7;margin:0}
-  .brand-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:36px}
-  .stat{background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.14);border-radius:18px;padding:16px}
-  .stat strong{display:block;font-size:1.4rem;font-weight:800;margin-bottom:6px}
-  .stat span{font-size:.75rem;color:#a5b4cf;text-transform:uppercase;letter-spacing:.12em}
-  .login-card{padding:40px 32px 32px;background:rgba(15,23,42,.8);display:flex;flex-direction:column;justify-content:center}
-  .eyebrow{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:#a78bfa;font-weight:700;margin-bottom:10px}
-  .login-card h3{font-size:2rem;font-weight:800;margin:0 0 10px}
-  .login-card .subtitle{color:#cbd5e1;margin:0 0 26px;line-height:1.6}
-  .auth-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:14px 18px;font-weight:700;border:none;cursor:pointer;transition:.2s ease}
-  .auth-btn:hover{transform:translateY(-1px)}
-  .divider{position:relative;text-align:center;margin:18px 0 20px}
-  .divider::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(148,163,184,.2)}
-  .divider span{position:relative;display:inline-block;padding:0 14px;background:rgba(15,23,42,.8);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#94a3b8}
-  .field{margin-bottom:18px}
-  .field label{display:block;margin-bottom:8px;color:#dbe7ff;font-size:.86rem}
-  .auth-input{width:100%;padding:13px 14px;border-radius:12px;background:#0f172a;border:1px solid #334155;color:#eef2ff;outline:none;transition:border-color .2s ease,box-shadow .2s ease}
-  .auth-input:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.18)}
-  .auth-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .auth-btn.primary{background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#ffffff}
-  .auth-btn.secondary{background:#0f172a;border:1px solid #334155;color:#eef2ff}
-  .auth-btn:disabled{opacity:.5;cursor:not-allowed}
-  .auth-status{min-height:22px;font-size:13px;margin-top:14px}
-  .auth-status.error{color:#fca5a5}
-  .auth-status.success{color:#86efac}
-  .auth-hint{margin-top:16px;color:#94a3b8;font-size:12px;text-align:center;line-height:1.5}
-  .toggle-mode{text-align:center;margin-top:16px}
-  .toggle-mode button{background:none;border:none;color:#8b5cf6;cursor:pointer;font-size:12px;text-decoration:underline}
-  .toggle-mode button:hover{color:#a78bfa}
-  .app-shell{max-width:1024px;margin:0 auto;min-height:100vh;background:#080b14}
-  .nav-btn,.subtab{transition:.2s ease}
-  .nav-btn.active{color:#fff;opacity:1}
-  .subtab.active-sub{color:#fff;border-color:#8b5cf6!important}
-  .bottom-nav{backdrop-filter:blur(18px)}
-  .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:#111827;border:1px solid #334155;color:#fff;font-size:12px;box-shadow:0 16px 35px rgba(0,0,0,.3);z-index:100}
-  @media (max-width:900px){.auth-panel{grid-template-columns:1fr}.brand-panel{padding:30px 24px 24px}.login-card{padding:30px 24px 24px}.brand-stats{grid-template-columns:1fr}}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,sans-serif}.muted{color:#93a0b8}.panel{background:linear-gradient(145deg,#151d2e,#0d1320);border:1px solid rgba(148,163,184,.18);border-radius:18px;box-shadow:0 12px 30px rgba(7,10,18,.25)}.hidden{display:none!important}.auth-shell{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at top,#111827,#080b14 38%,#050814);padding:24px}.auth-panel{width:min(1100px,100%);display:grid;grid-template-columns:1.15fr .85fr;background:rgba(15,23,42,.86);border:1px solid rgba(148,163,184,.18);border-radius:32px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,.75)}.brand-panel{padding:42px 38px;background:linear-gradient(135deg,#111827,#090d17 35%,#0d1320);position:relative;overflow:hidden}.brand-panel::before{content:"";position:absolute;inset:-20% auto auto -10%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#8b5cf6,rgba(139,92,246,.2) 40%,transparent 70%);filter:blur(10px);opacity:.8}.brand-panel::after{content:"";position:absolute;right:-120px;bottom:-100px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,#3b82f6,rgba(59,130,246,.18) 35%,transparent 72%);filter:blur(10px)}.brand-inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between}.brand-top{display:flex;align-items:center;gap:12px}.brand-badge{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:grid;place-items:center;font-size:20px;box-shadow:0 12px 30px rgba(139,92,246,.35)}.brand-title{font-size:1.8rem;font-weight:800;letter-spacing:.04em}.brand-copy{margin-top:28px;max-width:420px}.brand-copy h2{font-size:clamp(2.3rem,4vw,4rem);line-height:1.05;margin:0 0 18px;font-weight:900}.brand-copy p{color:#cbd5e1;line-height:1.7;margin:0}.brand-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:36px}.stat{background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.14);border-radius:18px;padding:16px}.stat strong{display:block;font-size:1.4rem;font-weight:800;margin-bottom:6px}.stat span{font-size:.75rem;color:#a5b4cf;text-transform:uppercase;letter-spacing:.12em}.login-card{padding:40px 32px 32px;background:rgba(15,23,42,.8);display:flex;flex-direction:column;justify-content:center}.eyebrow{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:#a78bfa;font-weight:700;margin-bottom:10px}.login-card h3{font-size:2rem;font-weight:800;margin:0 0 10px}.login-card .subtitle{color:#cbd5e1;margin:0 0 26px;line-height:1.6}.auth-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:14px 18px;font-weight:700;border:none;cursor:pointer;transition:.2s ease}.auth-btn:hover{transform:translateY(-1px)}.auth-btn:disabled{opacity:.5;cursor:not-allowed}.field{margin-bottom:18px}.field label{display:block;margin-bottom:8px;color:#dbe7ff;font-size:.86rem}.auth-input{width:100%;padding:13px 14px;border-radius:12px;background:#0f172a;border:1px solid #334155;color:#eef2ff;outline:none;transition:border-color .2s ease,box-shadow .2s ease}.auth-input:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.18)}.auth-btn.primary{background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#fff}.auth-btn.secondary{background:#0f172a;border:1px solid #334155;color:#eef2ff}.auth-status{min-height:22px;font-size:13px;margin-top:14px;padding:8px;border-radius:8px}.auth-status.error{color:#fca5a5;background:rgba(252,165,165,.1)}.auth-status.success{color:#86efac;background:rgba(134,239,172,.1)}.auth-hint{margin-top:16px;color:#94a3b8;font-size:12px;text-align:center;line-height:1.5}.toggle-auth{text-align:center;margin-top:16px;font-size:13px}.toggle-auth button{background:none;border:none;color:#8b5cf6;cursor:pointer;text-decoration:underline}.toggle-auth button:hover{color:#a78bfa}.app-shell{max-width:1024px;margin:0 auto;min-height:100vh;background:#080b14}.nav-btn,.subtab{transition:.2s ease}.nav-btn.active{color:#fff;opacity:1}.subtab.active-sub{color:#fff;border-color:#8b5cf6!important}.bottom-nav{backdrop-filter:blur(18px)}.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:#111827;border:1px solid #334155;color:#fff;font-size:12px;box-shadow:0 16px 35px rgba(0,0,0,.3);z-index:100}@media (max-width:900px){.auth-panel{grid-template-columns:1fr}.brand-panel{padding:30px 24px}.login-card{padding:30px 24px}.brand-stats{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div id="auth-screen" class="auth-shell">
   <div class="auth-panel">
-    <div class="brand-panel"><div class="brand-inner"><div class="brand-top"><div class="brand-badge"><i class="fa-solid fa-shield-halved"></i></div><div class="brand-title">TechnixPro</div></div><div class="brand-copy"><h2>Twój inteligentny<br>Core Engine</h2><p>Współpraca, nagrody, zadania i dane w jednym miejscu. Zaloguj się, aby uzyskać dostęp do pełnej platformy.</p></div><div class="brand-stats"><div class="stat"><strong>1.2M</strong><span>Aktywności</span></div><div class="stat"><strong>99.9%</strong><span>Stabilność</span></div><div class="stat"><strong>24/7</strong><span>Wsparcie</span></div></div></div></div>
-    <div class="login-card">
-      <div id="login-form">
-        <div class="eyebrow">Zaloguj się</div>
-        <h3>Witamy ponownie</h3>
-        <p class="subtitle">Wpisz swój e-mail i hasło, aby wejść do platformy TechnixPro.</p>
-        <div class="field">
-          <label for="auth-email">E-mail</label>
-          <input id="auth-email" class="auth-input" type="email" placeholder="twoj@email.com" autocomplete="email">
+    <div class="brand-panel">
+      <div class="brand-inner">
+        <div class="brand-top">
+          <div class="brand-badge"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="brand-title">TechnixPro</div>
         </div>
-        <div class="field">
-          <label for="auth-password">Hasło</label>
-          <input id="auth-password" class="auth-input" type="password" placeholder="••••••••" autocomplete="current-password">
+        <div class="brand-copy">
+          <h2>Twój inteligentny<br>Core Engine</h2>
+          <p>Współpraca, nagrody, zadania i dane w jednym miejscu. Zaloguj się, aby uzyskać dostęp do pełnej platformy.</p>
         </div>
-        <button id="sign-in-btn" class="auth-btn primary" type="button">Zaloguj się</button>
-        <div id="auth-status" class="auth-status"></div>
-        <div class="toggle-mode">
-          Nie masz konta? <button type="button" onclick="toggleAuthMode()">Zarejestruj się</button>
+        <div class="brand-stats">
+          <div class="stat"><strong>1.2M</strong><span>Aktywności</span></div>
+          <div class="stat"><strong>99.9%</strong><span>Stabilność</span></div>
+          <div class="stat"><strong>24/7</strong><span>Wsparcie</span></div>
         </div>
       </div>
+    </div>
+    <div class="login-card">
+      <div id="login-mode">
+        <div class="eyebrow">Zaloguj się</div>
+        <h3>Witamy ponownie</h3>
+        <p class="subtitle">Wpisz swój e-mail i hasło, aby wejść do platformy.</p>
+        <div class="field">
+          <label for="login-email">E-mail</label>
+          <input id="login-email" class="auth-input" type="email" placeholder="twoj@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="login-password">Hasło</label>
+          <input id="login-password" class="auth-input" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button id="login-btn" class="auth-btn primary">Zaloguj się</button>
+        <div id="login-status" class="auth-status"></div>
+        <div class="toggle-auth">Nie masz konta? <button type="button" onclick="switchMode('signup')">Zarejestruj się</button></div>
+      </div>
 
-      <div id="signup-form" class="hidden">
+      <div id="signup-mode" class="hidden">
         <div class="eyebrow">Nowe konto</div>
         <h3>Dołącz do nas</h3>
-        <p class="subtitle">Stwórz konto i zacznij korzystać z TechnixPro.</p>
+        <p class="subtitle">Utwórz konto i zacznij korzystać z TechnixPro.</p>
         <div class="field">
           <label for="signup-email">E-mail</label>
           <input id="signup-email" class="auth-input" type="email" placeholder="twoj@email.com" autocomplete="email">
@@ -103,407 +65,188 @@
           <label for="signup-confirm">Powtórz hasło</label>
           <input id="signup-confirm" class="auth-input" type="password" placeholder="••••••••" autocomplete="new-password">
         </div>
-        <button id="sign-up-btn" class="auth-btn primary" type="button">Utwórz konto</button>
+        <button id="signup-btn" class="auth-btn primary">Utwórz konto</button>
         <div id="signup-status" class="auth-status"></div>
-        <div class="toggle-mode">
-          Masz już konto? <button type="button" onclick="toggleAuthMode()">Zaloguj się</button>
-        </div>
+        <div class="toggle-auth">Masz już konto? <button type="button" onclick="switchMode('login')">Zaloguj się</button></div>
       </div>
     </div>
   </div>
 </div>
 
-<main id="appRoot" class="app-shell hidden">
-  <header class="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#080b14]/95 backdrop-blur-xl border-b border-slate-800"><div class="flex items-center gap-3"><button onclick="show('home','Kanał')" class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center"><i class="fa-solid fa-house text-sm"></i></button><div><div class="text-xs muted uppercase tracking-[0.2em]">Core Engine</div><div id="title" class="font-bold">Kanał</div></div></div><div class="flex items-center gap-2"><span id="user-email" class="text-[11px] muted hidden md:inline-block"></span><button id="logout-btn" class="bg-slate-900 border border-slate-700 px-3 py-2 rounded-xl text-sm text-slate-200">Wyloguj</button></div></header>
-  <div id="home-tabs" class="flex sticky top-[65px] z-20 bg-[#080b14] border-b border-slate-800"><button class="subtab active-sub py-3 border-b-2 border-violet-500 text-sm flex-1" onclick="sub('home','channel',this)">Kanał</button><button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="sub('home','community',this)">Społeczność</button><button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="sub('home','tasks',this)">Zadania</button></div>
-  <div id="gift-tabs" class="hidden tab-scroll sticky top-[65px] z-20 bg-[#080b14] border-b border-slate-800"><button class="active-sub py-3 border-b-2 border-violet-500 text-sm px-4" onclick="rewardTab('overview',this)">Przegląd</button><button class="py-3 border-b-2 border-transparent text-sm px-4" onclick="rewardTab('history',this)">Historia</button><button class="py-3 border-b-2 border-transparent text-sm px-4" onclick="rewardTab('missions',this)">Misje</button></div>
-  <div id="content" class="p-4 pb-28 scroll-none">
-    <section id="screen-home" class="screen space-y-4"><div id="home-channel" class="sub space-y-4"><div class="panel p-4 flex justify-between items-center"><div><span class="text-sm"><i class="fa-solid fa-circle text-emerald-400"></i> Kanał aktywny</span><div class="mt-1 text-2xl font-bold">TechnixPro</div></div><button class="bg-violet-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Aktywuj</button></div><div class="panel p-4"><div class="flex items-center justify-between mb-3"><h3 class="font-bold">Nowe wiadomości</h3><span class="text-xs muted">Live</span></div><div class="space-y-3"><div class="rounded-2xl bg-slate-900/70 p-3"><div class="text-sm text-violet-300">AI Insight</div><div class="text-sm mt-1">Użytkownicy z aktywnymi zadaniami osiągają 2,4x wyższy poziom retencji.</div></div><div class="rounded-2xl bg-slate-900/70 p-3"><div class="text-sm text-cyan-300">Aktualizacja</div><div class="text-sm mt-1">Nowe misje i bonusy są dostępne w sekcji nagród.</div></div></div></div><div class="panel p-4"><div class="flex items-center justify-between mb-3"><h3 class="font-bold">Posty</h3><button class="text-violet-300 text-xs" onclick="document.getElementById('post').focus()">Napisz</button></div><div class="flex gap-2 mb-3"><input id="post" class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white outline-none" placeholder="Co chcesz opublikować?"><button class="bg-violet-600 px-3 py-2 rounded-xl text-sm font-bold" onclick="post()">Wyślij</button></div><div id="posts" class="space-y-3"></div></div></div><div id="home-community" class="sub hidden space-y-4"><div class="panel p-4"><h3 class="font-bold mb-2">Społeczność</h3><p class="muted text-sm">Współpracuj z innymi użytkownikami, podziel się sukcesami i zdobywaj dodatkowe XP.</p></div><div class="panel p-4 space-y-3"><div class="flex items-center justify-between"><span>Level 22</span><span class="text-violet-300">1,280 XP</span></div><div class="h-2 rounded-full bg-slate-800"><div class="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400" style="width:70%"></div></div></div></div><div id="home-tasks" class="sub hidden space-y-4"><div class="panel p-4"><h3 class="font-bold mb-3">Zadania</h3><div id="task-list" class="space-y-3"></div></div></div></section>
-    <section id="screen-gift" class="screen hidden space-y-4"><div id="reward-overview" class="reward-view space-y-4"><div class="reward-art panel p-5 min-h-[190px]"><span class="status text-cyan-200 border border-cyan-400/20 bg-cyan-400/10 px-2 py-1 rounded-full text-xs">Dziś aktywne</span><div class="mt-3 text-3xl font-black">+2450 XP</div><p class="muted text-sm mt-2">Twoja nagroda dzienna jest gotowa do odbioru.</p><div class="mt-6 flex items-center justify-between"><button class="bg-violet-600 px-4 py-2 rounded-xl text-sm font-bold" onclick="claimReward('Daily bonus',25)">Odbierz bonus</button><div id="xp-total" class="text-xl font-bold">2450</div></div></div><div class="panel p-4"><div class="flex items-center justify-between mb-2"><h3 class="font-bold">Historia nagród</h3><span class="text-xs muted">Ostatnie 8</span></div><div id="reward-log" class="space-y-2"></div></div></div><div id="reward-history" class="reward-view hidden space-y-4"><div class="panel p-4"><h3 class="font-bold">Historia</h3><p class="muted text-sm mt-2">Szczegóły nagród z ostatnich 30 dni pojawią się po aktywacji konta.</p></div></div><div id="reward-missions" class="reward-view hidden space-y-4"><div class="panel p-4"><h3 class="font-bold">Misje</h3><p class="muted text-sm mt-2">Ukończ zadania, aby odblokować dodatkowe bonusy i akcesoria premium.</p></div></div></section>
-    <section id="screen-crypto" class="screen hidden space-y-4"><h2 class="text-2xl font-bold">Kryptowaluty</h2><p class="text-sm muted">Rynek demonstracyjny aktywów cyfrowych</p><div class="panel p-4"><div class="flex justify-between text-sm"><span>BTC</span><span class="text-emerald-300">+2.4%</span></div><div class="text-2xl font-bold mt-2">$63,480</div></div><div class="panel p-4"><div class="flex justify-between text-sm"><span>ETH</span><span class="text-emerald-300">+1.8%</span></div><div class="text-2xl font-bold mt-2">$3,420</div></div></section>
+<main id="app-screen" class="app-shell hidden">
+  <header class="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#080b14]/95 backdrop-blur-xl border-b border-slate-800">
+    <div class="flex items-center gap-3">
+      <button onclick="show('home','Kanał')" class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center"><i class="fa-solid fa-house text-sm"></i></button>
+      <div>
+        <div class="text-xs muted uppercase tracking-[0.2em]">Core Engine</div>
+        <div id="title" class="font-bold">Kanał</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="user-email" class="text-[11px] muted hidden md:inline-block"></span>
+      <button id="logout-btn" class="bg-slate-900 border border-slate-700 px-3 py-2 rounded-xl text-sm text-slate-200">Wyloguj</button>
+    </div>
+  </header>
+
+  <div id="home-tabs" class="flex sticky top-[65px] z-20 bg-[#080b14] border-b border-slate-800">
+    <button class="subtab active-sub py-3 border-b-2 border-violet-500 text-sm flex-1" onclick="sub('home','channel',this)">Kanał</button>
+    <button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="sub('home','community',this)">Społeczność</button>
+    <button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="sub('home','tasks',this)">Zadania</button>
   </div>
-  <nav class="bottom-nav fixed bottom-0 left-0 right-0 z-40 max-w-2xl mx-auto flex justify-around pt-3 bg-[#0b0f1b]/95 backdrop-blur-xl border-t border-slate-800"><button class="nav-btn active flex flex-col items-center gap-1 text-xs py-2" onclick="show('home','Kanał')"><i class="fa-solid fa-house"></i><span>Home</span></button><button class="nav-btn flex flex-col items-center gap-1 text-xs py-2" onclick="show('gift','Nagrody')"><i class="fa-solid fa-gift"></i><span>Nagrody</span></button><button class="nav-btn flex flex-col items-center gap-1 text-xs py-2" onclick="show('crypto','Krypto')"><i class="fa-solid fa-coins"></i><span>Krypto</span></button></nav>
-  <div id="toast" class="toast hidden">Pomyślnie</div>
+
+  <div id="gift-tabs" class="hidden tab-scroll sticky top-[65px] z-20 bg-[#080b14] border-b border-slate-800">
+    <button class="active-sub py-3 border-b-2 border-violet-500 text-sm px-4" onclick="rewardTab('overview',this)">Przegląd</button>
+    <button class="py-3 border-b-2 border-transparent text-sm px-4" onclick="rewardTab('history',this)">Historia</button>
+    <button class="py-3 border-b-2 border-transparent text-sm px-4" onclick="rewardTab('missions',this)">Misje</button>
+  </div>
+
+  <div id="content" class="p-4 pb-28">
+    <section id="screen-home" class="screen space-y-4">
+      <div id="home-channel" class="sub space-y-4">
+        <div class="panel p-4 flex justify-between items-center">
+          <div>
+            <span class="text-sm"><i class="fa-solid fa-circle text-emerald-400"></i> Kanał aktywny</span>
+            <div class="mt-1 text-2xl font-bold">TechnixPro</div>
+          </div>
+          <button class="bg-violet-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Aktywuj</button>
+        </div>
+        <div class="panel p-4">
+          <div class="flex items-center justify-between mb-3"><h3 class="font-bold">Nowe wiadomości</h3><span class="text-xs muted">Live</span></div>
+          <div class="space-y-3">
+            <div class="rounded-2xl bg-slate-900/70 p-3"><div class="text-sm text-violet-300">AI Insight</div><div class="text-sm mt-1">Użytkownicy z aktywnymi zadaniami osiągają 2,4x wyższy poziom retencji.</div></div>
+            <div class="rounded-2xl bg-slate-900/70 p-3"><div class="text-sm text-cyan-300">Aktualizacja</div><div class="text-sm mt-1">Nowe misje i bonusy są dostępne w sekcji nagród.</div></div>
+          </div>
+        </div>
+        <div class="panel p-4">
+          <div class="flex items-center justify-between mb-3"><h3 class="font-bold">Posty</h3><button class="text-violet-300 text-xs" onclick="document.getElementById('post').focus()">Napisz</button></div>
+          <div class="flex gap-2 mb-3"><input id="post" class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white outline-none" placeholder="Co chcesz opublikować?"><button class="bg-violet-600 px-3 py-2 rounded-xl text-sm font-bold" onclick="post()">Wyślij</button></div>
+          <div id="posts" class="space-y-3"></div>
+        </div>
+      </div>
+      <div id="home-community" class="sub hidden space-y-4">
+        <div class="panel p-4"><h3 class="font-bold mb-2">Społeczność</h3><p class="muted text-sm">Współpracuj z innymi użytkownikami, podziel się sukcesami i zdobywaj dodatkowe XP.</p></div>
+        <div class="panel p-4 space-y-3">
+          <div class="flex items-center justify-between"><span>Level 22</span><span class="text-violet-300">1,280 XP</span></div>
+          <div class="h-2 rounded-full bg-slate-800"><div class="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400" style="width:70%"></div></div>
+        </div>
+      </div>
+      <div id="home-tasks" class="sub hidden space-y-4">
+        <div class="panel p-4"><h3 class="font-bold mb-3">Zadania</h3><div id="task-list" class="space-y-3"></div></div>
+      </div>
+    </section>
+
+    <section id="screen-gift" class="screen hidden space-y-4">
+      <div id="reward-overview" class="reward-view space-y-4">
+        <div class="reward-art panel p-5 min-h-[190px]">
+          <span class="status text-cyan-200 border border-cyan-400/20 bg-cyan-400/10 px-2 py-1 rounded-full text-xs">Dziś aktywne</span>
+          <div class="mt-3 text-3xl font-black">+2450 XP</div>
+          <p class="muted text-sm mt-2">Twoja nagroda dzienna jest gotowa do odbioru.</p>
+          <div class="mt-6 flex items-center justify-between">
+            <button class="bg-violet-600 px-4 py-2 rounded-xl text-sm font-bold" onclick="claimReward('Daily bonus',25)">Odbierz bonus</button>
+            <div id="xp-total" class="text-xl font-bold">2450</div>
+          </div>
+        </div>
+        <div class="panel p-4">
+          <div class="flex items-center justify-between mb-2"><h3 class="font-bold">Historia nagród</h3><span class="text-xs muted">Ostatnie 8</span></div>
+          <div id="reward-log" class="space-y-2"></div>
+        </div>
+      </div>
+      <div id="reward-history" class="reward-view hidden space-y-4">
+        <div class="panel p-4"><h3 class="font-bold">Historia</h3><p class="muted text-sm mt-2">Szczegóły nagród z ostatnich 30 dni pojawią się po aktywacji konta.</p></div>
+      </div>
+      <div id="reward-missions" class="reward-view hidden space-y-4">
+        <div class="panel p-4"><h3 class="font-bold">Misje</h3><p class="muted text-sm mt-2">Ukończ zadania, aby odblokować dodatkowe bonusy i akcesoria premium.</p></div>
+      </div>
+    </section>
+
+    <section id="screen-crypto" class="screen hidden space-y-4">
+      <h2 class="text-2xl font-bold">Kryptowaluty</h2>
+      <p class="text-sm muted">Rynek demonstracyjny aktywów cyfrowych</p>
+      <div class="panel p-4">
+        <div class="flex justify-between text-sm"><span>BTC</span><span class="text-emerald-300">+2.4%</span></div>
+        <div class="text-2xl font-bold mt-2">$63,480</div>
+      </div>
+      <div class="panel p-4">
+        <div class="flex justify-between text-sm"><span>ETH</span><span class="text-emerald-300">+1.8%</span></div>
+        <div class="text-2xl font-bold mt-2">$3,420</div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="bottom-nav fixed bottom-0 left-0 right-0 z-40 max-w-2xl mx-auto flex justify-around pt-3 bg-[#0b0f1b]/95 backdrop-blur-xl border-t border-slate-800">
+    <button class="nav-btn active flex flex-col items-center gap-1 text-xs py-2" onclick="show('home','Kanał')"><i class="fa-solid fa-house"></i><span>Home</span></button>
+    <button class="nav-btn flex flex-col items-center gap-1 text-xs py-2" onclick="show('gift','Nagrody')"><i class="fa-solid fa-gift"></i><span>Nagrody</span></button>
+    <button class="nav-btn flex flex-col items-center gap-1 text-xs py-2" onclick="show('crypto','Krypto')"><i class="fa-solid fa-coins"></i><span>Krypto</span></button>
+  </nav>
+
+  <div id="toast" class="toast hidden"></div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://atiwyufvrjniqhgcbrbi.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_B693lj86M6dW1f01MbDGgw_xW7GTMCG';
-  const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const SUPABASE_URL='https://atiwyufvrjniqhgcbrbi.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_B693lj86M6dW1f01MbDGgw_xW7GTMCG';
+const supabase=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
 
-  const authScreen = document.getElementById('auth-screen');
-  const appRoot = document.getElementById('appRoot');
-  const loginForm = document.getElementById('login-form');
-  const signupForm = document.getElementById('signup-form');
-  const authEmail = document.getElementById('auth-email');
-  const authPassword = document.getElementById('auth-password');
-  const authStatus = document.getElementById('auth-status');
-  const signInBtn = document.getElementById('sign-in-btn');
-  const signupEmail = document.getElementById('signup-email');
-  const signupPassword = document.getElementById('signup-password');
-  const signupConfirm = document.getElementById('signup-confirm');
-  const signupStatus = document.getElementById('signup-status');
-  const signUpBtn = document.getElementById('sign-up-btn');
-  const userEmail = document.getElementById('user-email');
-  const logoutBtn = document.getElementById('logout-btn');
+const authScreen=document.getElementById('auth-screen');
+const appScreen=document.getElementById('app-screen');
+const loginEmail=document.getElementById('login-email');
+const loginPassword=document.getElementById('login-password');
+const loginBtn=document.getElementById('login-btn');
+const loginStatus=document.getElementById('login-status');
+const signupEmail=document.getElementById('signup-email');
+const signupPassword=document.getElementById('signup-password');
+const signupConfirm=document.getElementById('signup-confirm');
+const signupBtn=document.getElementById('signup-btn');
+const signupStatus=document.getElementById('signup-status');
+const userEmail=document.getElementById('user-email');
+const logoutBtn=document.getElementById('logout-btn');
 
-  function toggleAuthMode() {
-    loginForm.classList.toggle('hidden');
-    signupForm.classList.toggle('hidden');
-    authStatus.textContent = '';
-    signupStatus.textContent = '';
-    authEmail.value = '';
-    authPassword.value = '';
-    signupEmail.value = '';
-    signupPassword.value = '';
-    signupConfirm.value = '';
-  }
+function switchMode(mode){const loginMode=document.getElementById('login-mode');const signupMode=document.getElementById('signup-mode');if(mode==='login'){loginMode.classList.remove('hidden');signupMode.classList.add('hidden');loginStatus.textContent='';loginEmail.value='';loginPassword.value='';}else{signupMode.classList.remove('hidden');loginMode.classList.add('hidden');signupStatus.textContent='';signupEmail.value='';signupPassword.value='';signupConfirm.value='';}}
 
-  function setAuthStatus(message, type = 'error') {
-    authStatus.textContent = message || '';
-    authStatus.className = 'auth-status';
-    if (type) authStatus.classList.add(type);
-  }
+function showAuthScreen(){authScreen.classList.remove('hidden');appScreen.classList.add('hidden');}
 
-  function setSignupStatus(message, type = 'error') {
-    signupStatus.textContent = message || '';
-    signupStatus.className = 'auth-status';
-    if (type) signupStatus.classList.add(type);
-  }
+function showAppScreen(){authScreen.classList.add('hidden');appScreen.classList.remove('hidden');if(supabase){supabase.auth.getUser().then(({data})=>{if(data?.user?.email){userEmail.textContent=data.user.email;userEmail.classList.remove('hidden');}}).catch(()=>{});}render();renderTasks();renderLog();document.getElementById('xp-total').textContent=getXP();}
 
-  function renderAuthScreen() {
-    authScreen.classList.remove('hidden');
-    appRoot.classList.add('hidden');
-  }
+async function handleLogin(){if(!supabase){loginStatus.textContent='Supabase nie jest dostępny.';loginStatus.className='auth-status error';return;}const email=loginEmail.value.trim();const password=loginPassword.value.trim();if(!email||!password){loginStatus.textContent='Wpisz e-mail i hasło.';loginStatus.className='auth-status error';return;}loginBtn.disabled=true;loginBtn.textContent='Logowanie...';try{const {error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;loginStatus.textContent='Zalogowano! Wczytywanie...';loginStatus.className='auth-status success';setTimeout(showAppScreen,500);}catch(err){loginStatus.textContent=err.message||'Błąd logowania';loginStatus.className='auth-status error';}finally{loginBtn.disabled=false;loginBtn.textContent='Zaloguj się';}}
 
-  function renderAppScreen() {
-    authScreen.classList.add('hidden');
-    appRoot.classList.remove('hidden');
+async function handleSignup(){if(!supabase){signupStatus.textContent='Supabase nie jest dostępny.';signupStatus.className='auth-status error';return;}const email=signupEmail.value.trim();const password=signupPassword.value.trim();const confirm=signupConfirm.value.trim();if(!email||!password||!confirm){signupStatus.textContent='Wszystkie pola są wymagane.';signupStatus.className='auth-status error';return;}if(password.length<6){signupStatus.textContent='Hasło musi mieć minimum 6 znaków.';signupStatus.className='auth-status error';return;}if(password!==confirm){signupStatus.textContent='Hasła nie są takie same.';signupStatus.className='auth-status error';return;}signupBtn.disabled=true;signupBtn.textContent='Tworzenie konta...';try{const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:window.location.href}});if(error)throw error;if(data.session){signupStatus.textContent='Konto utworzone! Zalogowano...';signupStatus.className='auth-status success';setTimeout(showAppScreen,500);}else{signupStatus.textContent='Konto utworzone! Sprawdź e-mail, aby potwierdzić.';signupStatus.className='auth-status success';setTimeout(()=>switchMode('login'),3000);}}catch(err){signupStatus.textContent=err.message||'Błąd rejestracji';signupStatus.className='auth-status error';}finally{signupBtn.disabled=false;signupBtn.textContent='Utwórz konto';}}
 
-    if (supabase) {
-      supabase.auth.getUser().then(({ data }) => {
-        if (data?.user?.email) {
-          userEmail.textContent = data.user.email;
-          userEmail.classList.remove('hidden');
-        }
-      }).catch(() => {});
-    }
+async function handleLogout(){if(!supabase)return showAuthScreen();const {error}=await supabase.auth.signOut();if(error){toast(error.message||'Błąd wylogowania');return;}userEmail.textContent='';userEmail.classList.add('hidden');showAuthScreen();}
 
-    render();
-    renderTasks();
-    renderLog();
-    document.getElementById('xp-total').textContent = getXP();
-  }
+async function initAuth(){if(!supabase){showAuthScreen();loginStatus.textContent='Brak połączenia z Supabase';loginStatus.className='auth-status error';return;}try{const {data:{session},error}=await supabase.auth.getSession();if(error)throw error;if(session?.user){userEmail.textContent=session.user.email||'Użytkownik';userEmail.classList.remove('hidden');showAppScreen();}else{showAuthScreen();}}catch(err){showAuthScreen();loginStatus.textContent='Błąd sesji';loginStatus.className='auth-status error';}supabase.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED'){if(session?.user){userEmail.textContent=session.user.email||'Użytkownik';userEmail.classList.remove('hidden');}showAppScreen();}if(event==='SIGNED_OUT'){userEmail.textContent='';userEmail.classList.add('hidden');showAuthScreen();}});}
 
-  async function signIn() {
-    if (!supabase) {
-      setAuthStatus('Supabase nie jest skonfigurowany.', 'error');
-      return;
-    }
+loginBtn.addEventListener('click',handleLogin);signupBtn.addEventListener('click',handleSignup);logoutBtn.addEventListener('click',handleLogout);
 
-    const email = authEmail.value.trim();
-    const password = authPassword.value.trim();
+function show(tab,title){document.querySelectorAll('.screen').forEach(x=>x.classList.add('hidden'));document.getElementById('screen-'+tab)?.classList.remove('hidden');document.getElementById('title').textContent=title||'TechnixPro';document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.remove('active'));document.querySelector(`.nav-btn[onclick*="show('${tab}'"]`)?.classList.add('active');}
 
-    if (!email || !password) {
-      setAuthStatus('Wprowadź e-mail i hasło.', 'error');
-      return;
-    }
+function sub(parent,id,btn){document.querySelectorAll('.sub').forEach(x=>x.classList.add('hidden'));document.getElementById(parent+'-'+id)?.classList.remove('hidden');document.querySelectorAll('.subtab').forEach(x=>{x.classList.remove('active-sub','border-violet-500');x.classList.add('border-transparent');});if(btn){btn.classList.add('active-sub','border-violet-500');btn.classList.remove('border-transparent');}}
 
-    signInBtn.disabled = true;
-    signInBtn.textContent = 'Logowanie...';
+function rewardTab(id,btn){document.querySelectorAll('.reward-view').forEach(x=>x.classList.add('hidden'));document.getElementById('reward-'+id)?.classList.remove('hidden');if(btn){document.querySelectorAll('#gift-tabs button').forEach(x=>{x.classList.remove('active-sub','border-violet-500');x.classList.add('border-transparent');});btn.classList.add('active-sub','border-violet-500');btn.classList.remove('border-transparent');}}
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      setAuthStatus('Pomyślnie zalogowano.', 'success');
-      setTimeout(renderAppScreen, 300);
-    } catch (error) {
-      setAuthStatus(error.message || 'Nie udało się zalogować.', 'error');
-    } finally {
-      signInBtn.disabled = false;
-      signInBtn.textContent = 'Zaloguj się';
-    }
-  }
+function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>x.classList.add('hidden'),2400);}
 
-  async function signUp() {
-    if (!supabase) {
-      setSignupStatus('Supabase nie jest skonfigurowany.', 'error');
-      return;
-    }
+function post(){const i=document.getElementById('post');const v=i.value.trim();if(!v)return toast('Wpisz treść posta.');const a=JSON.parse(localStorage.getItem('tpPosts')||'[]');a.unshift({v,d:new Date().toISOString()});localStorage.setItem('tpPosts',JSON.stringify(a));i.value='';render();}
 
-    const email = signupEmail.value.trim();
-    const password = signupPassword.value.trim();
-    const confirm = signupConfirm.value.trim();
+function render(){const b=document.getElementById('posts');if(!b)return;const a=JSON.parse(localStorage.getItem('tpPosts')||'[]');b.innerHTML=a.length?a.map((p,n)=>`<article class="panel p-4"><b class="text-sm text-violet-300">Użytkownik</b><div class="mt-2 text-sm">${safe(p.v)}</div><div class="mt-3 flex items-center justify-between text-xs muted"><span>${new Date(p.d).toLocaleString('pl-PL')}</span><button class="text-red-300" onclick="removePost(${n})">Usuń</button></div></article>`).join(''):'<div class="panel p-4 text-sm muted">Brak postów. Dodaj pierwszy wpis.</div>';}
 
-    if (!email || !password || !confirm) {
-      setSignupStatus('Wszystkie pola są wymagane.', 'error');
-      return;
-    }
+function removePost(n){const a=JSON.parse(localStorage.getItem('tpPosts')||'[]');a.splice(n,1);localStorage.setItem('tpPosts',JSON.stringify(a));render();}
 
-    if (password.length < 6) {
-      setSignupStatus('Hasło musi mieć co najmniej 6 znaków.', 'error');
-      return;
-    }
+function safe(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
-    if (password !== confirm) {
-      setSignupStatus('Hasła nie są takie same.', 'error');
-      return;
-    }
+function getXP(){return Number(localStorage.getItem('tpXP')||2450);}
 
-    signUpBtn.disabled = true;
-    signUpBtn.textContent = 'Tworzenie konta...';
+function addXP(amount,label){const xp=getXP()+amount;localStorage.setItem('tpXP',String(xp));const log=JSON.parse(localStorage.getItem('tpRewardLog')||'[]');log.unshift({label,amount,date:new Date().toLocaleString('pl-PL')});localStorage.setItem('tpRewardLog',JSON.stringify(log));renderLog();document.getElementById('xp-total').textContent=xp;toast('Dodano '+amount+' XP');}
 
-    try {
-      const { data, error } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: {
-          emailRedirectTo: window.location.href
-        }
-      });
+function claimReward(label='Daily bonus',amount=25){const key='claimed_'+label.replace(/\s/g,'_');if(localStorage.getItem(key))return toast('Ta nagroda została już odebrana.');localStorage.setItem(key,'1');addXP(amount,label);}
 
-      if (error) throw error;
+function renderTasks(){const done=JSON.parse(localStorage.getItem('tpTasks')||'[]');const tasks=[['login','Zaloguj się do TechnixPro',25],['group','Opublikuj post w Grupie',50],['info','Odwiedź Core Engine',75]];const wrap=document.getElementById('task-list');if(!wrap)return;wrap.innerHTML=tasks.map(([id,label,amount])=>`<div class="panel p-3 flex items-center justify-between"><div><div class="font-semibold text-sm">${label}</div><div class="text-xs muted">+${amount} XP</div></div><button class="${done.includes(id)?'bg-emerald-600':'bg-violet-600'} px-3 py-2 rounded-xl text-xs font-bold" onclick="completeTask('${id}',${amount},'${label}')">${done.includes(id)?'Ukończone':'Zrealizuj'}</button></div>`).join('');}
 
-      if (data.session) {
-        setSignupStatus('Konto utworzone! Logowanie...', 'success');
-        setTimeout(renderAppScreen, 300);
-      } else {
-        setSignupStatus('Konto utworzone! Sprawdź e-mail, aby je potwierdzić.', 'success');
-        setTimeout(() => toggleAuthMode(), 2000);
-      }
-    } catch (error) {
-      setSignupStatus(error.message || 'Nie udało się utworzyć konta.', 'error');
-    } finally {
-      signUpBtn.disabled = false;
-      signUpBtn.textContent = 'Utwórz konto';
-    }
-  }
+function completeTask(id,amount=50,label='Cyber Week step'){const done=JSON.parse(localStorage.getItem('tpTasks')||'[]');if(done.includes(id))return toast('To zadanie jest już wykonane.');done.push(id);localStorage.setItem('tpTasks',JSON.stringify(done));addXP(amount,label);renderTasks();}
 
-  async function logout() {
-    if (!supabase) return renderAuthScreen();
+function renderLog(){const a=JSON.parse(localStorage.getItem('tpRewardLog')||'[]');const el=document.getElementById('reward-log');if(!el)return;el.innerHTML=a.length?a.slice(0,8).map(x=>`<div class="flex justify-between bg-slate-900/80 rounded-xl px-3 py-2 text-sm"><span>${safe(x.label)}</span><span class="text-emerald-300">+${x.amount} XP</span></div>`).join(''):'<div class="text-sm muted">Brak aktywności nagród.</div>';}
 
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast(error.message || 'Nie udało się wylogować.');
-      return;
-    }
-
-    userEmail.textContent = '';
-    userEmail.classList.add('hidden');
-    renderAuthScreen();
-  }
-
-  async function initAuth() {
-    if (!supabase) {
-      renderAuthScreen();
-      setAuthStatus('Brak klienta Supabase.', 'error');
-      return;
-    }
-
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) throw error;
-
-      if (session?.user) {
-        userEmail.textContent = session.user.email || session.user.user_metadata?.full_name || 'Użytkownik';
-        userEmail.classList.remove('hidden');
-        renderAppScreen();
-      } else {
-        renderAuthScreen();
-      }
-    } catch (error) {
-      renderAuthScreen();
-      setAuthStatus(error.message || 'Nie można pobrać sesji.', 'error');
-    }
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (session?.user) {
-          userEmail.textContent = session.user.email || session.user.user_metadata?.full_name || 'Użytkownik';
-          userEmail.classList.remove('hidden');
-        }
-        renderAppScreen();
-      }
-
-      if (event === 'SIGNED_OUT') {
-        userEmail.textContent = '';
-        userEmail.classList.add('hidden');
-        renderAuthScreen();
-      }
-    });
-  }
-
-  signInBtn.addEventListener('click', signIn);
-  signUpBtn.addEventListener('click', signUp);
-  logoutBtn.addEventListener('click', logout);
-
-  function show(tab, title) {
-    document.querySelectorAll('.screen').forEach(x => x.classList.add('hidden'));
-    document.getElementById('screen-' + tab)?.classList.remove('hidden');
-    document.getElementById('title').textContent = title || 'TechnixPro';
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.nav-btn[onclick*="show('${tab}'"]`)?.classList.add('active');
-    document.getElementById('home-tabs').classList.toggle('hidden', tab !== 'home');
-    document.getElementById('gift-tabs').classList.toggle('hidden', tab !== 'gift');
-  }
-
-  function sub(parent, id, btn) {
-    document.querySelectorAll('.sub').forEach(x => x.classList.add('hidden'));
-    document.getElementById(parent + '-' + id)?.classList.remove('hidden');
-    document.querySelectorAll('.subtab').forEach(x => {
-      x.classList.remove('active-sub', 'border-violet-500');
-      x.classList.add('border-transparent');
-    });
-    if (btn) {
-      btn.classList.add('active-sub', 'border-violet-500');
-      btn.classList.remove('border-transparent');
-    }
-  }
-
-  function rewardTab(id, btn) {
-    document.querySelectorAll('.reward-view').forEach(x => x.classList.add('hidden'));
-    document.getElementById('reward-' + id)?.classList.remove('hidden');
-
-    if (btn) {
-      document.querySelectorAll('#gift-tabs button').forEach(x => {
-        x.classList.remove('active-sub', 'border-violet-500');
-        x.classList.add('border-transparent');
-      });
-      btn.classList.add('active-sub', 'border-violet-500');
-      btn.classList.remove('border-transparent');
-    }
-  }
-
-  function toast(t) {
-    const x = document.getElementById('toast');
-    x.textContent = t;
-    x.classList.remove('hidden');
-    clearTimeout(window.t);
-    window.t = setTimeout(() => x.classList.add('hidden'), 2400);
-  }
-
-  function post() {
-    const i = document.getElementById('post');
-    const v = i.value.trim();
-    if (!v) return toast('Wpisz treść posta.');
-
-    const a = JSON.parse(localStorage.getItem('tpPosts') || '[]');
-    a.unshift({ v, d: new Date().toISOString() });
-    localStorage.setItem('tpPosts', JSON.stringify(a));
-    i.value = '';
-    render();
-  }
-
-  function render() {
-    const b = document.getElementById('posts');
-    if (!b) return;
-
-    const a = JSON.parse(localStorage.getItem('tpPosts') || '[]');
-    b.innerHTML = a.length
-      ? a.map((p, n) => `
-          <article class="panel p-4">
-            <b class="text-sm text-violet-300">Użytkownik</b>
-            <div class="mt-2 text-sm">${safe(p.v)}</div>
-            <div class="mt-3 flex items-center justify-between text-xs muted">
-              <span>${new Date(p.d).toLocaleString('pl-PL')}</span>
-              <button class="text-red-300" onclick="removePost(${n})">Usuń</button>
-            </div>
-          </article>
-        `).join('')
-      : '<div class="panel p-4 text-sm muted">Brak postów. Dodaj pierwszy wpis.</div>';
-  }
-
-  function removePost(n) {
-    const a = JSON.parse(localStorage.getItem('tpPosts') || '[]');
-    a.splice(n, 1);
-    localStorage.setItem('tpPosts', JSON.stringify(a));
-    render();
-  }
-
-  function safe(s) {
-    return String(s).replace(/[&<>"']/g, m => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    }[m]));
-  }
-
-  function getXP() {
-    return Number(localStorage.getItem('tpXP') || 2450);
-  }
-
-  function addXP(amount, label) {
-    const xp = getXP() + amount;
-    localStorage.setItem('tpXP', String(xp));
-
-    const log = JSON.parse(localStorage.getItem('tpRewardLog') || '[]');
-    log.unshift({ label, amount, date: new Date().toLocaleString('pl-PL') });
-    localStorage.setItem('tpRewardLog', JSON.stringify(log));
-
-    renderLog();
-    document.getElementById('xp-total').textContent = xp;
-    toast('Dodano ' + amount + ' XP');
-  }
-
-  function claimReward(label = 'Daily bonus', amount = 25) {
-    const key = 'claimed_' + label.replace(/\s/g, '_');
-    if (localStorage.getItem(key)) return toast('Ta nagroda została już odebrana.');
-    localStorage.setItem(key, '1');
-    addXP(amount, label);
-  }
-
-  function renderTasks() {
-    const done = JSON.parse(localStorage.getItem('tpTasks') || '[]');
-    const tasks = [
-      ['login', 'Zaloguj się do TechnixPro', 25],
-      ['group', 'Opublikuj post w Grupie', 50],
-      ['info', 'Odwiedź Core Engine', 75]
-    ];
-
-    const wrap = document.getElementById('task-list');
-    if (!wrap) return;
-
-    wrap.innerHTML = tasks.map(([id, label, amount]) => `
-      <div class="panel p-3 flex items-center justify-between">
-        <div>
-          <div class="font-semibold text-sm">${label}</div>
-          <div class="text-xs muted">+${amount} XP</div>
-        </div>
-        <button class="${done.includes(id) ? 'bg-emerald-600' : 'bg-violet-600'} px-3 py-2 rounded-xl text-xs font-bold" onclick="completeTask('${id}',${amount},'${label}')">${done.includes(id) ? 'Ukończone' : 'Zrealizuj'}</button>
-      </div>
-    `).join('');
-  }
-
-  function completeTask(id, amount = 50, label = 'Cyber Week step') {
-    const done = JSON.parse(localStorage.getItem('tpTasks') || '[]');
-    if (done.includes(id)) return toast('To zadanie jest już wykonane.');
-
-    done.push(id);
-    localStorage.setItem('tpTasks', JSON.stringify(done));
-
-    addXP(amount, label);
-    renderTasks();
-  }
-
-  function renderLog() {
-    const a = JSON.parse(localStorage.getItem('tpRewardLog') || '[]');
-    const el = document.getElementById('reward-log');
-    if (!el) return;
-
-    el.innerHTML = a.length
-      ? a.slice(0, 8).map(x => `
-          <div class="flex justify-between bg-slate-900/80 rounded-xl px-3 py-2 text-sm">
-            <span>${safe(x.label)}</span>
-            <span class="text-emerald-300">+${x.amount} XP</span>
-          </div>
-        `).join('')
-      : '<div class="text-sm muted">Brak aktywności nagród.</div>';
-  }
-
-  initAuth();
+initAuth();
 </script>
 </body>
 </html>
