@@ -43,13 +43,15 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
 .auth-input:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.18)}
 .auth-btn.primary{background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#ffffff}
 .auth-btn.secondary{background:#0f172a;border:1px solid #334155;color:#eef2ff}
-.auth-status{min-height:22px;font-size:13px;margin-top:14px;padding:8px 12px;border-radius:8px;display:none}
+.auth-status{min-height:22px;font-size:13px;margin-top:14px;padding:8px 12px;border-radius:8px;display:none;word-break:break-word}
 .auth-status.show{display:block}
 .auth-status.error{color:#fca5a5;background:rgba(252,165,165,.1)}
 .auth-status.success{color:#86efac;background:rgba(134,239,172,.1)}
+.auth-status.info{color:#87ceeb;background:rgba(135,206,235,.1)}
 .toggle-auth{text-align:center;margin-top:16px;font-size:13px;color:#cbd5e1}
 .toggle-auth button{background:none;border:none;color:#8b5cf6;cursor:pointer;text-decoration:underline;font-weight:600}
 .toggle-auth button:hover{color:#a78bfa}
+.debug-box{background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;margin-top:16px;font-size:12px;font-family:monospace;max-height:200px;overflow-y:auto;color:#93a0b8}
 .app-shell{max-width:1024px;margin:0 auto;min-height:100vh;background:#080b14}
 .nav-btn,.subtab{transition:.2s ease}
 .nav-btn.active{color:#fff;opacity:1}
@@ -58,7 +60,7 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
 .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:#111827;border:1px solid #334155;color:#fff;font-size:12px;box-shadow:0 16px 35px rgba(0,0,0,.3);z-index:100}
 @media (max-width:900px){
 .auth-panel{grid-template-columns:1fr}
-.brand-panel{padding:30px 24px}
+.brand-panel{padding:30px 24px;display:none}
 .login-card{padding:30px 24px}
 .brand-stats{grid-template-columns:1fr}
 }
@@ -106,6 +108,8 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
         
         <button id="login-btn" class="auth-btn primary">Zaloguj się</button>
         <div id="login-status" class="auth-status"></div>
+        
+        <button id="test-btn" class="auth-btn secondary" style="margin-top:10px">Test Supabase</button>
         
         <div class="toggle-auth">
           Nie masz konta? 
@@ -229,7 +233,16 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
 // SUPABASE CONFIG
 const SUPABASE_URL = 'https://atiwyufvrjniqhgcbrbi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_B693lj86M6dW1f01MbDGgw_xW7GTMCG';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let supabase = null;
+
+// Initialize Supabase
+try {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  console.log('✓ Supabase initialized');
+} catch (err) {
+  console.error('✗ Supabase init error:', err);
+}
 
 // DOM ELEMENTS
 const authScreen = document.getElementById('auth-screen');
@@ -249,9 +262,12 @@ const toggleSignupBtn = document.getElementById('toggle-signup-btn');
 const toggleLoginBtn = document.getElementById('toggle-login-btn');
 const userEmail = document.getElementById('user-email');
 const logoutBtn = document.getElementById('logout-btn');
+const testBtn = document.getElementById('test-btn');
 
 // FORM SWITCHING
-toggleSignupBtn.addEventListener('click', () => {
+toggleSignupBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  console.log('Switching to signup form');
   loginForm.classList.add('hidden');
   signupForm.classList.remove('hidden');
   loginStatus.classList.remove('show');
@@ -260,7 +276,9 @@ toggleSignupBtn.addEventListener('click', () => {
   loginPassword.value = '';
 });
 
-toggleLoginBtn.addEventListener('click', () => {
+toggleLoginBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  console.log('Switching to login form');
   signupForm.classList.add('hidden');
   loginForm.classList.remove('hidden');
   loginStatus.classList.remove('show');
@@ -268,6 +286,26 @@ toggleLoginBtn.addEventListener('click', () => {
   signupEmail.value = '';
   signupPassword.value = '';
   signupConfirm.value = '';
+});
+
+// TEST BUTTON
+testBtn.addEventListener('click', async () => {
+  testBtn.disabled = true;
+  testBtn.textContent = 'Testowanie...';
+  
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      showStatus(loginStatus, '✗ Błąd: ' + error.message, 'error');
+    } else {
+      showStatus(loginStatus, '✓ Supabase działa! ' + (data.session ? 'Zalogowany' : 'Niezalogowany'), 'success');
+    }
+  } catch (err) {
+    showStatus(loginStatus, '✗ ' + err.message, 'error');
+  } finally {
+    testBtn.disabled = false;
+    testBtn.textContent = 'Test Supabase';
+  }
 });
 
 // LOGIN
@@ -280,16 +318,32 @@ loginBtn.addEventListener('click', async () => {
     return;
   }
 
+  if (!supabase) {
+    showStatus(loginStatus, 'Supabase nie jest dostępny', 'error');
+    return;
+  }
+
   loginBtn.disabled = true;
   loginBtn.textContent = 'Logowanie...';
+  showStatus(loginStatus, 'Logowanie...', 'info');
 
   try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    showStatus(loginStatus, 'Zalogowano!', 'success');
-    setTimeout(showApp, 1000);
+    const { data, error } = await supabase.auth.signInWithPassword({ 
+      email, 
+      password 
+    });
+    
+    if (error) {
+      showStatus(loginStatus, '✗ ' + error.message, 'error');
+    } else if (data.session) {
+      showStatus(loginStatus, '✓ Zalogowano!', 'success');
+      setTimeout(showApp, 800);
+    } else {
+      showStatus(loginStatus, 'Niespodziewana odpowiedź', 'error');
+    }
   } catch (err) {
-    showStatus(loginStatus, err.message || 'Błąd logowania', 'error');
+    showStatus(loginStatus, '✗ ' + err.message, 'error');
+    console.error('Login error:', err);
   } finally {
     loginBtn.disabled = false;
     loginBtn.textContent = 'Zaloguj się';
@@ -317,27 +371,41 @@ signupBtn.addEventListener('click', async () => {
     return;
   }
 
+  if (!supabase) {
+    showStatus(signupStatus, 'Supabase nie jest dostępny', 'error');
+    return;
+  }
+
   signupBtn.disabled = true;
   signupBtn.textContent = 'Tworzenie konta...';
+  showStatus(signupStatus, 'Tworzenie konta...', 'info');
 
   try {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.href }
+      options: { 
+        emailRedirectTo: window.location.origin + window.location.pathname
+      }
     });
 
-    if (error) throw error;
-
-    if (data.session) {
-      showStatus(signupStatus, 'Konto utworzone!', 'success');
-      setTimeout(showApp, 1000);
+    if (error) {
+      showStatus(signupStatus, '✗ ' + error.message, 'error');
     } else {
-      showStatus(signupStatus, 'Konto utworzone! Sprawdź e-mail aby potwierdzić.', 'success');
-      setTimeout(() => toggleLoginBtn.click(), 3000);
+      showStatus(signupStatus, '✓ Konto utworzone!', 'success');
+      
+      if (data.session) {
+        setTimeout(showApp, 800);
+      } else {
+        setTimeout(() => {
+          showStatus(signupStatus, 'Sprawdź e-mail aby potwierdzić konto', 'info');
+          setTimeout(() => toggleLoginBtn.click(), 3000);
+        }, 800);
+      }
     }
   } catch (err) {
-    showStatus(signupStatus, err.message || 'Błąd rejestracji', 'error');
+    showStatus(signupStatus, '✗ ' + err.message, 'error');
+    console.error('Signup error:', err);
   } finally {
     signupBtn.disabled = false;
     signupBtn.textContent = 'Utwórz konto';
@@ -473,31 +541,40 @@ function toast(t) {
 }
 
 // CHECK AUTH ON LOAD
-supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session?.user) {
-    userEmail.textContent = session.user.email;
-    userEmail.classList.remove('hidden');
-    showApp();
-  } else {
-    showAuth();
-  }
-});
-
-// LISTEN FOR AUTH CHANGES
-supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+if (supabase) {
+  supabase.auth.getSession().then(({ data: { session }, error }) => {
+    if (error) {
+      console.error('Session check error:', error);
+      showStatus(loginStatus, '✗ Błąd sesji: ' + error.message, 'error');
+    }
     if (session?.user) {
       userEmail.textContent = session.user.email;
       userEmail.classList.remove('hidden');
+      showApp();
+    } else {
+      showAuth();
     }
-    showApp();
-  }
-  if (event === 'SIGNED_OUT') {
-    userEmail.textContent = '';
-    userEmail.classList.add('hidden');
-    showAuth();
-  }
-});
+  });
+
+  // LISTEN FOR AUTH CHANGES
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log('Auth state changed:', event);
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session?.user) {
+        userEmail.textContent = session.user.email;
+        userEmail.classList.remove('hidden');
+      }
+      showApp();
+    }
+    if (event === 'SIGNED_OUT') {
+      userEmail.textContent = '';
+      userEmail.classList.add('hidden');
+      showAuth();
+    }
+  });
+} else {
+  showStatus(loginStatus, '✗ Supabase nie załadował się prawidłowo', 'error');
+}
 </script>
 
 </body>
