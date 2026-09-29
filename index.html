@@ -7,18 +7,13 @@
 <title>TechnixPro — Core Engine</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,sans-serif;min-height:100vh}
 .muted{color:#93a0b8}
 .panel{background:linear-gradient(145deg,#151d2e,#0d1320);border:1px solid rgba(148,163,184,.18);border-radius:18px;box-shadow:0 12px 30px rgba(7,10,18,.25)}
 .hidden{display:none!important}
-.auth-shell{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at top,#111827,#080b14 38%,#050814);padding:24px}
-.auth-panel{width:min(1100px,100%);display:grid;grid-template-columns:1.15fr .85fr;background:rgba(15,23,42,.86);border:1px solid rgba(148,163,184,.18);border-radius:32px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,.75)}
 .brand-panel{padding:42px 38px;background:linear-gradient(135deg,#111827,#090d17 35%,#0d1320);position:relative;overflow:hidden}
-.brand-panel::before{content:"";position:absolute;inset:-20% auto auto -10%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#8b5cf6,rgba(139,92,246,.2) 40%,transparent 70%);filter:blur(10px);opacity:.8}
-.brand-panel::after{content:"";position:absolute;right:-120px;bottom:-100px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,#3b82f6,rgba(59,130,246,.18) 35%,transparent 72%);filter:blur(10px)}
 .brand-inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between}
 .brand-top{display:flex;align-items:center;gap:12px}
 .brand-badge{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:grid;place-items:center;font-size:20px;box-shadow:0 12px 30px rgba(139,92,246,.35)}
@@ -43,115 +38,20 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
 .auth-input:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.18)}
 .auth-btn.primary{background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#ffffff}
 .auth-btn.secondary{background:#0f172a;border:1px solid #334155;color:#eef2ff}
-.auth-status{min-height:22px;font-size:13px;margin-top:14px;padding:8px 12px;border-radius:8px;display:none;word-break:break-word}
-.auth-status.show{display:block}
-.auth-status.error{color:#fca5a5;background:rgba(252,165,165,.1)}
-.auth-status.success{color:#86efac;background:rgba(134,239,172,.1)}
-.auth-status.info{color:#87ceeb;background:rgba(135,206,235,.1)}
-.toggle-auth{text-align:center;margin-top:16px;font-size:13px;color:#cbd5e1}
-.toggle-auth button{background:none;border:none;color:#8b5cf6;cursor:pointer;text-decoration:underline;font-weight:600}
-.toggle-auth button:hover{color:#a78bfa}
-.debug-box{background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;margin-top:16px;font-size:12px;font-family:monospace;max-height:200px;overflow-y:auto;color:#93a0b8}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:#111827;border:1px solid #334155;color:#fff;font-size:12px;box-shadow:0 16px 35px rgba(2,6,23,.5)}
 .app-shell{max-width:1024px;margin:0 auto;min-height:100vh;background:#080b14}
 .nav-btn,.subtab{transition:.2s ease}
-.nav-btn.active{color:#fff;opacity:1}
 .subtab.active-sub{color:#fff;border-color:#8b5cf6!important}
 .bottom-nav{backdrop-filter:blur(18px)}
-.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:#111827;border:1px solid #334155;color:#fff;font-size:12px;box-shadow:0 16px 35px rgba(0,0,0,.3);z-index:100}
 @media (max-width:900px){
-.auth-panel{grid-template-columns:1fr}
-.brand-panel{padding:30px 24px;display:none}
-.login-card{padding:30px 24px}
-.brand-stats{grid-template-columns:1fr}
+.brand-panel{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
-<div id="auth-screen" class="auth-shell">
-  <div class="auth-panel">
-    <div class="brand-panel">
-      <div class="brand-inner">
-        <div class="brand-top">
-          <div class="brand-badge"><i class="fa-solid fa-shield-halved"></i></div>
-          <div class="brand-title">TechnixPro</div>
-        </div>
-        <div class="brand-copy">
-          <h2>Twój inteligentny<br>Core Engine</h2>
-          <p>Współpraca, nagrody, zadania i dane w jednym miejscu. Zaloguj się, aby uzyskać dostęp do pełnej platformy.</p>
-        </div>
-        <div class="brand-stats">
-          <div class="stat"><strong>1.2M</strong><span>Aktywności</span></div>
-          <div class="stat"><strong>99.9%</strong><span>Stabilność</span></div>
-          <div class="stat"><strong>24/7</strong><span>Wsparcie</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="login-card">
-      <!-- LOGIN FORM -->
-      <div id="login-form">
-        <div class="eyebrow">Zaloguj się</div>
-        <h3>Witamy ponownie</h3>
-        <p class="subtitle">Wpisz swój e-mail i hasło, aby wejść do platformy.</p>
-        
-        <div class="field">
-          <label for="login-email">E-mail</label>
-          <input id="login-email" class="auth-input" type="email" placeholder="twoj@email.com">
-        </div>
-        
-        <div class="field">
-          <label for="login-password">Hasło</label>
-          <input id="login-password" class="auth-input" type="password" placeholder="••••••••">
-        </div>
-        
-        <button id="login-btn" class="auth-btn primary">Zaloguj się</button>
-        <div id="login-status" class="auth-status"></div>
-        
-        <button id="test-btn" class="auth-btn secondary" style="margin-top:10px">Test Supabase</button>
-        
-        <div class="toggle-auth">
-          Nie masz konta? 
-          <button type="button" id="toggle-signup-btn">Zarejestruj się</button>
-        </div>
-      </div>
-
-      <!-- SIGNUP FORM -->
-      <div id="signup-form" class="hidden">
-        <div class="eyebrow">Nowe konto</div>
-        <h3>Dołącz do nas</h3>
-        <p class="subtitle">Utwórz konto i zacznij korzystać z TechnixPro.</p>
-        
-        <div class="field">
-          <label for="signup-email">E-mail</label>
-          <input id="signup-email" class="auth-input" type="email" placeholder="twoj@email.com">
-        </div>
-        
-        <div class="field">
-          <label for="signup-password">Hasło</label>
-          <input id="signup-password" class="auth-input" type="password" placeholder="Minimum 6 znaków">
-        </div>
-        
-        <div class="field">
-          <label for="signup-confirm">Powtórz hasło</label>
-          <input id="signup-confirm" class="auth-input" type="password" placeholder="••••••••">
-        </div>
-        
-        <button id="signup-btn" class="auth-btn primary">Utwórz konto</button>
-        <div id="signup-status" class="auth-status"></div>
-        
-        <div class="toggle-auth">
-          Masz już konto? 
-          <button type="button" id="toggle-login-btn">Zaloguj się</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- APP SCREEN -->
-<main id="app-screen" class="app-shell hidden">
+<!-- APP SCREEN (wersja bez formularza) -->
+<main id="app-screen" class="app-shell">
   <header class="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#080b14]/95 backdrop-blur-xl border-b border-slate-800">
     <div class="flex items-center gap-3">
       <div>
@@ -160,15 +60,15 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <span id="user-email" class="text-[11px] muted hidden md:inline-block"></span>
+      <span id="user-email" class="text-[11px] muted hidden md:inline-block">Użytkownik</span>
       <button id="logout-btn" class="bg-slate-900 border border-slate-700 px-3 py-2 rounded-xl text-sm text-slate-200">Wyloguj</button>
     </div>
   </header>
 
   <div id="home-tabs" class="flex sticky top-[65px] z-20 bg-[#080b14] border-b border-slate-800">
-    <button class="subtab active-sub py-3 border-b-2 border-violet-500 text-sm flex-1" onclick="switchTab('home')">Kanał</button>
-    <button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="switchTab('rewards')">Nagrody</button>
-    <button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="switchTab('crypto')">Krypto</button>
+    <button class="subtab active-sub py-3 border-b-2 border-violet-500 text-sm flex-1" onclick="switchTab(event,'home')">Kanał</button>
+    <button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="switchTab(event,'rewards')">Nagrody</button>
+    <button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="switchTab(event,'crypto')">Krypto</button>
   </div>
 
   <div id="content" class="p-4 pb-28 space-y-4">
@@ -184,28 +84,42 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
       <div class="panel p-4">
         <div class="flex items-center justify-between mb-3"><h3 class="font-bold">Nowe wiadomości</h3><span class="text-xs muted">Live</span></div>
         <div class="space-y-3">
-          <div class="rounded-2xl bg-slate-900/70 p-3"><div class="text-sm text-violet-300">AI Insight</div><div class="text-sm mt-1">Użytkownicy z aktywnymi zadaniami osiągają 2,4x wyższy poziom retencji.</div></div>
+          <div class="rounded-2xl bg-slate-900/70 p-3"><div class="text-sm text-violet-300">AI Insight</div><div class="text-sm mt-1">Użytkownicy z aktywnymi zadaniami osiągają 2,4x wyższy poziom zaangażowania.</div></div>
           <div class="rounded-2xl bg-slate-900/70 p-3"><div class="text-sm text-cyan-300">Aktualizacja</div><div class="text-sm mt-1">Nowe misje i bonusy są dostępne w sekcji nagród.</div></div>
         </div>
       </div>
 
       <div class="panel p-4">
         <div class="flex items-center justify-between mb-3"><h3 class="font-bold">Posty</h3></div>
-        <div class="flex gap-2 mb-3"><input id="post" class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white outline-none" placeholder="Co chcesz opublikować?"><button class="bg-violet-600 px-3 py-2 rounded-xl text-sm font-bold" onclick="post()">Wyślij</button></div>
+        <div class="flex gap-2 mb-3">
+          <input id="post" class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white outline-none" placeholder="Co chcesz opublikować?">
+          <button onclick="post()" class="bg-violet-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Opublikuj</button>
+        </div>
         <div id="posts" class="space-y-3"></div>
       </div>
     </section>
 
     <section id="tab-rewards" class="tab-content hidden">
       <div class="panel p-5 min-h-[190px]">
-        <span class="status text-cyan-200 border border-cyan-400/20 bg-cyan-400/10 px-2 py-1 rounded-full text-xs">Dziś aktywne</span>
-        <div class="mt-3 text-3xl font-black">+2450 XP</div>
-        <p class="muted text-sm mt-2">Twoja nagroda dzienna jest gotowa do odbioru.</p>
-        <div class="mt-6 flex items-center justify-between">
-          <button class="bg-violet-600 px-4 py-2 rounded-xl text-sm font-bold text-white" onclick="claimReward('Daily bonus',25)">Odbierz bonus</button>
-          <div id="xp-total" class="text-xl font-bold">2450</div>
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <span class="status text-cyan-200 border border-cyan-400/20 bg-cyan-400/10 px-2 py-1 rounded-full text-xs">Dziś aktywne</span>
+            <div class="mt-3 text-3xl font-black">+<span id="xp-today">2450</span> XP</div>
+            <p class="muted text-sm mt-2">Twoja nagroda dzienna i dostępne eventy.</p>
+          </div>
+          <div class="flex flex-col gap-3 w-[220px]">
+            <button class="bg-violet-600 px-4 py-2 rounded-xl text-sm font-bold text-white" onclick="claimReward('Daily bonus',25)">Odbierz bonus</button>
+            <button class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-xl text-sm text-white" onclick="claimReward('Weekly challenge',100)">Wyzwanie tygodniowe</button>
+            <button class="bg-amber-600 px-4 py-2 rounded-xl text-sm font-bold text-black" onclick="claimReward('Special event',500)">Wydarzenie specjalne</button>
+          </div>
         </div>
       </div>
+
+      <div class="panel p-4">
+        <div class="flex items-center justify-between mb-2"><h3 class="font-bold">Nadchodzące eventy</h3></div>
+        <div id="events-upcoming" class="space-y-2"></div>
+      </div>
+
       <div class="panel p-4">
         <div class="flex items-center justify-between mb-2"><h3 class="font-bold">Historia nagród</h3></div>
         <div id="reward-log" class="space-y-2"></div>
@@ -230,234 +144,7 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
 </main>
 
 <script>
-// SUPABASE CONFIG
-const SUPABASE_URL = 'https://atiwyufvrjniqhgcbrbi.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_B693lj86M6dW1f01MbDGgw_xW7GTMCG';
-
-let supabase = null;
-
-// Initialize Supabase
-try {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  console.log('✓ Supabase initialized');
-} catch (err) {
-  console.error('✗ Supabase init error:', err);
-}
-
-// DOM ELEMENTS
-const authScreen = document.getElementById('auth-screen');
-const appScreen = document.getElementById('app-screen');
-const loginForm = document.getElementById('login-form');
-const signupForm = document.getElementById('signup-form');
-const loginEmail = document.getElementById('login-email');
-const loginPassword = document.getElementById('login-password');
-const loginBtn = document.getElementById('login-btn');
-const loginStatus = document.getElementById('login-status');
-const signupEmail = document.getElementById('signup-email');
-const signupPassword = document.getElementById('signup-password');
-const signupConfirm = document.getElementById('signup-confirm');
-const signupBtn = document.getElementById('signup-btn');
-const signupStatus = document.getElementById('signup-status');
-const toggleSignupBtn = document.getElementById('toggle-signup-btn');
-const toggleLoginBtn = document.getElementById('toggle-login-btn');
-const userEmail = document.getElementById('user-email');
-const logoutBtn = document.getElementById('logout-btn');
-const testBtn = document.getElementById('test-btn');
-
-// FORM SWITCHING
-toggleSignupBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  console.log('Switching to signup form');
-  loginForm.classList.add('hidden');
-  signupForm.classList.remove('hidden');
-  loginStatus.classList.remove('show');
-  signupStatus.classList.remove('show');
-  loginEmail.value = '';
-  loginPassword.value = '';
-});
-
-toggleLoginBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  console.log('Switching to login form');
-  signupForm.classList.add('hidden');
-  loginForm.classList.remove('hidden');
-  loginStatus.classList.remove('show');
-  signupStatus.classList.remove('show');
-  signupEmail.value = '';
-  signupPassword.value = '';
-  signupConfirm.value = '';
-});
-
-// TEST BUTTON
-testBtn.addEventListener('click', async () => {
-  testBtn.disabled = true;
-  testBtn.textContent = 'Testowanie...';
-  
-  try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      showStatus(loginStatus, '✗ Błąd: ' + error.message, 'error');
-    } else {
-      showStatus(loginStatus, '✓ Supabase działa! ' + (data.session ? 'Zalogowany' : 'Niezalogowany'), 'success');
-    }
-  } catch (err) {
-    showStatus(loginStatus, '✗ ' + err.message, 'error');
-  } finally {
-    testBtn.disabled = false;
-    testBtn.textContent = 'Test Supabase';
-  }
-});
-
-// LOGIN
-loginBtn.addEventListener('click', async () => {
-  const email = loginEmail.value.trim();
-  const password = loginPassword.value.trim();
-
-  if (!email || !password) {
-    showStatus(loginStatus, 'Wpisz e-mail i hasło', 'error');
-    return;
-  }
-
-  if (!supabase) {
-    showStatus(loginStatus, 'Supabase nie jest dostępny', 'error');
-    return;
-  }
-
-  loginBtn.disabled = true;
-  loginBtn.textContent = 'Logowanie...';
-  showStatus(loginStatus, 'Logowanie...', 'info');
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({ 
-      email, 
-      password 
-    });
-    
-    if (error) {
-      showStatus(loginStatus, '✗ ' + error.message, 'error');
-    } else if (data.session) {
-      showStatus(loginStatus, '✓ Zalogowano!', 'success');
-      setTimeout(showApp, 800);
-    } else {
-      showStatus(loginStatus, 'Niespodziewana odpowiedź', 'error');
-    }
-  } catch (err) {
-    showStatus(loginStatus, '✗ ' + err.message, 'error');
-    console.error('Login error:', err);
-  } finally {
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'Zaloguj się';
-  }
-});
-
-// SIGNUP
-signupBtn.addEventListener('click', async () => {
-  const email = signupEmail.value.trim();
-  const password = signupPassword.value.trim();
-  const confirm = signupConfirm.value.trim();
-
-  if (!email || !password || !confirm) {
-    showStatus(signupStatus, 'Wszystkie pola są wymagane', 'error');
-    return;
-  }
-
-  if (password.length < 6) {
-    showStatus(signupStatus, 'Hasło musi mieć minimum 6 znaków', 'error');
-    return;
-  }
-
-  if (password !== confirm) {
-    showStatus(signupStatus, 'Hasła nie są takie same', 'error');
-    return;
-  }
-
-  if (!supabase) {
-    showStatus(signupStatus, 'Supabase nie jest dostępny', 'error');
-    return;
-  }
-
-  signupBtn.disabled = true;
-  signupBtn.textContent = 'Tworzenie konta...';
-  showStatus(signupStatus, 'Tworzenie konta...', 'info');
-
-  try {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { 
-        emailRedirectTo: window.location.origin + window.location.pathname
-      }
-    });
-
-    if (error) {
-      showStatus(signupStatus, '✗ ' + error.message, 'error');
-    } else {
-      showStatus(signupStatus, '✓ Konto utworzone!', 'success');
-      
-      if (data.session) {
-        setTimeout(showApp, 800);
-      } else {
-        setTimeout(() => {
-          showStatus(signupStatus, 'Sprawdź e-mail aby potwierdzić konto', 'info');
-          setTimeout(() => toggleLoginBtn.click(), 3000);
-        }, 800);
-      }
-    }
-  } catch (err) {
-    showStatus(signupStatus, '✗ ' + err.message, 'error');
-    console.error('Signup error:', err);
-  } finally {
-    signupBtn.disabled = false;
-    signupBtn.textContent = 'Utwórz konto';
-  }
-});
-
-// LOGOUT
-logoutBtn.addEventListener('click', async () => {
-  await supabase.auth.signOut();
-  showAuth();
-});
-
-// HELPERS
-function showStatus(el, msg, type) {
-  el.textContent = msg;
-  el.className = 'auth-status show ' + type;
-}
-
-function showAuth() {
-  authScreen.classList.remove('hidden');
-  appScreen.classList.add('hidden');
-}
-
-function showApp() {
-  authScreen.classList.add('hidden');
-  appScreen.classList.remove('hidden');
-  loadApp();
-}
-
-function loadApp() {
-  supabase.auth.getUser().then(({ data }) => {
-    if (data?.user?.email) {
-      userEmail.textContent = data.user.email;
-      userEmail.classList.remove('hidden');
-    }
-  });
-  render();
-  renderLog();
-  document.getElementById('xp-total').textContent = getXP();
-}
-
-// TABS
-function switchTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden'));
-  document.getElementById('tab-' + tab).classList.remove('hidden');
-  document.querySelectorAll('.subtab').forEach(x => {
-    x.classList.remove('active-sub', 'border-violet-500');
-    x.classList.add('border-transparent');
-  });
-  event.target.classList.add('active-sub', 'border-violet-500');
-  event.target.classList.remove('border-transparent');
-}
+// Wersja bez Supabase i formularza logowania/rejestracji
 
 // POSTS
 function post() {
@@ -510,7 +197,64 @@ function claimReward(label = 'Daily bonus', amount = 25) {
   localStorage.setItem('tpRewardLog', JSON.stringify(log));
   renderLog();
   document.getElementById('xp-total').textContent = xp;
+  document.getElementById('xp-today').textContent = xp;
   toast('Dodano ' + amount + ' XP!');
+}
+
+// EVENTS (rozszerzenie rewards)
+function ensureDefaultEvents() {
+  if (localStorage.getItem('tpEvents')) return;
+  const defaultEvents = [
+    { id: 1, title: 'Weekend Sprint', desc: 'Szybkie zadania - podwójne XP przez weekend', xp: 50, date: '2026-10-03' },
+    { id: 2, title: 'Hackathon', desc: 'Wspólne wydarzenie z nagrodami', xp: 300, date: '2026-10-15' },
+    { id: 3, title: 'Flash Quest', desc: 'Krótka misja dnia', xp: 20, date: '2026-09-30' }
+  ];
+  localStorage.setItem('tpEvents', JSON.stringify(defaultEvents));
+}
+
+function renderEvents() {
+  const el = document.getElementById('events-upcoming');
+  if (!el) return;
+  const events = JSON.parse(localStorage.getItem('tpEvents') || '[]');
+  if (!events.length) {
+    el.innerHTML = '<div class="text-sm muted">Brak nadchodzących eventów.</div>';
+    return;
+  }
+  el.innerHTML = events.map(e => {
+    const key = 'claimed_event_' + e.id;
+    const claimed = !!localStorage.getItem(key);
+    return `
+      <div class="flex items-center justify-between bg-slate-900/80 rounded-xl px-3 py-2 text-sm">
+        <div>
+          <div class="font-bold">${safe(e.title)}</div>
+          <div class="muted text-xs">${safe(e.desc)} • ${e.date}</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="text-emerald-300">+${e.xp} XP</div>
+          <button class="px-3 py-1 rounded-md ${claimed ? 'bg-slate-700 text-slate-400' : 'bg-violet-600 text-white'} text-sm" ${claimed ? 'disabled' : ''} onclick="claimEvent(${e.id})">${claimed ? 'Odebrane' : 'Odbierz'}</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function claimEvent(id) {
+  const events = JSON.parse(localStorage.getItem('tpEvents') || '[]');
+  const e = events.find(x => x.id === id);
+  if (!e) return toast('Wydarzenie nieznalezione');
+  const key = 'claimed_event_' + id;
+  if (localStorage.getItem(key)) return toast('To wydarzenie już odebrane');
+  localStorage.setItem(key, '1');
+  const xp = getXP() + e.xp;
+  localStorage.setItem('tpXP', String(xp));
+  const log = JSON.parse(localStorage.getItem('tpRewardLog') || '[]');
+  log.unshift({ label: e.title, amount: e.xp, date: new Date().toLocaleString('pl-PL') });
+  localStorage.setItem('tpRewardLog', JSON.stringify(log));
+  renderLog();
+  renderEvents();
+  document.getElementById('xp-total').textContent = xp;
+  document.getElementById('xp-today').textContent = xp;
+  toast('Odebrano ' + e.xp + ' XP z wydarzenia');
 }
 
 function renderLog() {
@@ -527,7 +271,7 @@ function renderLog() {
 
 // UTILS
 function safe(s) {
-  return String(s).replace(/[&<>"']/g, m => ({
+  return String(s).replace(/[&<>\"']/g, m => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[m]));
 }
@@ -540,41 +284,42 @@ function toast(t) {
   window.toastTimer = setTimeout(() => x.classList.add('hidden'), 2400);
 }
 
-// CHECK AUTH ON LOAD
-if (supabase) {
-  supabase.auth.getSession().then(({ data: { session }, error }) => {
-    if (error) {
-      console.error('Session check error:', error);
-      showStatus(loginStatus, '✗ Błąd sesji: ' + error.message, 'error');
-    }
-    if (session?.user) {
-      userEmail.textContent = session.user.email;
-      userEmail.classList.remove('hidden');
-      showApp();
-    } else {
-      showAuth();
-    }
+// TABS
+function switchTab(ev, tab) {
+  document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden'));
+  document.getElementById('tab-' + tab).classList.remove('hidden');
+  document.querySelectorAll('.subtab').forEach(x => {
+    x.classList.remove('active-sub', 'border-violet-500');
+    x.classList.add('border-transparent');
   });
-
-  // LISTEN FOR AUTH CHANGES
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log('Auth state changed:', event);
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-      if (session?.user) {
-        userEmail.textContent = session.user.email;
-        userEmail.classList.remove('hidden');
-      }
-      showApp();
-    }
-    if (event === 'SIGNED_OUT') {
-      userEmail.textContent = '';
-      userEmail.classList.add('hidden');
-      showAuth();
-    }
-  });
-} else {
-  showStatus(loginStatus, '✗ Supabase nie załadował się prawidłowo', 'error');
+  if (ev && ev.currentTarget) {
+    ev.currentTarget.classList.add('active-sub', 'border-violet-500');
+    ev.currentTarget.classList.remove('border-transparent');
+  }
 }
+
+// Logout (bez backendu) - po prostu odśwież aplikację / wyczyść dane użytkownika
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+    toast('Wylogowano');
+    setTimeout(() => location.reload(), 700);
+  });
+}
+
+// Inicjalizacja aplikacji przy starcie
+function showApp() {
+  ensureDefaultEvents();
+  render();
+  renderLog();
+  renderEvents();
+  const xp = getXP();
+  document.getElementById('xp-total').textContent = xp;
+  document.getElementById('xp-today').textContent = xp;
+}
+
+// Uruchom od razu - wersja bez formularza
+showApp();
 </script>
 
 </body>
