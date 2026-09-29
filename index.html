@@ -39,28 +39,38 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
 .auth-btn.primary{background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#ffffff}
 .auth-btn.secondary{background:#0f172a;border:1px solid #334155;color:#eef2ff}
 .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:#111827;border:1px solid #334155;color:#fff;font-size:12px;box-shadow:0 16px 35px rgba(2,6,23,.5)}
-.app-shell{max-width:1024px;margin:0 auto;min-height:100vh;background:#080b14}
+.app-shell{max-width:1024px;margin:0 auto;min-height:100vh;background:#080b14;padding-bottom:84px}
 .nav-btn,.subtab{transition:.2s ease}
 .subtab.active-sub{color:#fff;border-color:#8b5cf6!important}
-.bottom-nav{backdrop-filter:blur(18px)}
-@media (max-width:900px){
-.brand-panel{display:none}
-}
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;display:flex;gap:10px;background:linear-gradient(90deg,rgba(17,24,39,.9),rgba(11,14,24,.9));padding:8px;border-radius:999px;border:1px solid rgba(148,163,184,.06);box-shadow:0 12px 30px rgba(3,7,18,.6);z-index:60}
+.bottom-nav button{background:transparent;border:none;color:#9aa7c7;padding:10px 12px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px}
+.bottom-nav button.active{color:#fff;background:linear-gradient(135deg,#6d28d9,#06b6d4);box-shadow:0 8px 20px rgba(13,0,46,.35)}
+.bottom-nav i{font-size:18px}
+.home-card{display:flex;gap:12px;align-items:center}
+.bitcoin-present{display:flex;align-items:center;gap:12px}
+.bitcoin-circle{width:56px;height:56px;border-radius:999px;background:linear-gradient(135deg,#f59e0b,#f97316);display:grid;place-items:center;font-weight:800;color:#08101a;box-shadow:0 10px 30px rgba(249,115,22,.14)}
+@media (max-width:900px){.brand-panel{display:none}}
 </style>
 </head>
 <body>
 
-<!-- APP SCREEN (wersja bez formularza) -->
+<!-- APP SCREEN — przywrócona stara wersja TechnixPro z dolnym paskiem (5 ikon) -->
 <main id="app-screen" class="app-shell">
   <header class="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#080b14]/95 backdrop-blur-xl border-b border-slate-800">
     <div class="flex items-center gap-3">
-      <div>
-        <div class="text-xs muted uppercase tracking-[0.2em]">Core Engine</div>
-        <div id="title" class="font-bold">Kanał</div>
+      <div class="home-card">
+        <div class="brand-badge"><i class="fa-solid fa-shield-halved"></i></div>
+        <div>
+          <div class="text-xs muted uppercase tracking-[0.2em]">TechnixPro</div>
+          <div id="title" class="font-bold">Kanał</div>
+        </div>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <span id="user-email" class="text-[11px] muted hidden md:inline-block">Użytkownik</span>
+      <div class="bitcoin-present">
+        <div class="bitcoin-circle"><i class="fa-solid fa-bitcoin"></i></div>
+        <div class="text-sm muted hidden sm:block">BTC $63,480 <span class="text-emerald-300">+2.4%</span></div>
+      </div>
       <button id="logout-btn" class="bg-slate-900 border border-slate-700 px-3 py-2 rounded-xl text-sm text-slate-200">Wyloguj</button>
     </div>
   </header>
@@ -71,7 +81,7 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
     <button class="subtab py-3 border-b-2 border-transparent text-sm flex-1" onclick="switchTab(event,'crypto')">Krypto</button>
   </div>
 
-  <div id="content" class="p-4 pb-28 space-y-4">
+  <div id="content" class="p-4 pb-6 space-y-4">
     <section id="tab-home" class="tab-content">
       <div class="panel p-4 flex justify-between items-center">
         <div>
@@ -129,9 +139,15 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
     <section id="tab-crypto" class="tab-content hidden">
       <h2 class="text-2xl font-bold">Kryptowaluty</h2>
       <p class="text-sm muted">Rynek demonstracyjny aktywów cyfrowych</p>
-      <div class="panel p-4">
-        <div class="flex justify-between text-sm"><span>BTC</span><span class="text-emerald-300">+2.4%</span></div>
-        <div class="text-2xl font-bold mt-2">$63,480</div>
+      <div class="panel p-4 flex items-center justify-between">
+        <div>
+          <div class="text-sm muted">Bitcoin (BTC)</div>
+          <div class="text-2xl font-bold mt-2">$63,480</div>
+        </div>
+        <div class="text-right">
+          <div class="text-sm muted">Zmiana 24h</div>
+          <div class="text-emerald-300 font-bold">+2.4%</div>
+        </div>
       </div>
       <div class="panel p-4">
         <div class="flex justify-between text-sm"><span>ETH</span><span class="text-emerald-300">+1.8%</span></div>
@@ -140,13 +156,20 @@ html,body{margin:0;padding:0;background:#080b14;color:#eef2ff;font-family:Arial,
     </section>
   </div>
 
+  <!-- Dolny pasek nawigacji (5 ikon) -->
+  <nav class="bottom-nav" aria-label="Dolna nawigacja">
+    <button id="bn-home" class="active" onclick="navTo('home')"><i class="fa-solid fa-house"></i><span>Home</span></button>
+    <button id="bn-channel" onclick="navTo('home')"><i class="fa-solid fa-rss"></i><span>Kanał</span></button>
+    <button id="bn-bitcoin" onclick="navTo('crypto')"><i class="fa-brands fa-bitcoin"></i><span>Bitcoin</span></button>
+    <button id="bn-rewards" onclick="navTo('rewards')"><i class="fa-solid fa-gift"></i><span>Nagrody</span></button>
+    <button id="bn-profile" onclick="navTo('profile')"><i class="fa-solid fa-user"></i><span>Profil</span></button>
+  </nav>
+
   <div id="toast" class="toast hidden"></div>
 </main>
 
 <script>
-// Wersja bez Supabase i formularza logowania/rejestracji
-
-// POSTS
+// Posts
 function post() {
   const i = document.getElementById('post');
   const v = i.value.trim();
@@ -162,16 +185,7 @@ function render() {
   const b = document.getElementById('posts');
   if (!b) return;
   const a = JSON.parse(localStorage.getItem('tpPosts') || '[]');
-  b.innerHTML = a.length ? a.map((p, n) => `
-    <article class="panel p-4">
-      <b class="text-sm text-violet-300">Użytkownik</b>
-      <div class="mt-2 text-sm">${safe(p.v)}</div>
-      <div class="mt-3 flex items-center justify-between text-xs muted">
-        <span>${new Date(p.d).toLocaleString('pl-PL')}</span>
-        <button class="text-red-300" onclick="removePost(${n})">Usuń</button>
-      </div>
-    </article>
-  `).join('') : '<div class="panel p-4 text-sm muted">Brak postów. Dodaj pierwszy wpis.</div>';
+  b.innerHTML = a.length ? a.map((p, n) => `\n    <article class="panel p-4">\n      <b class="text-sm text-violet-300">Użytkownik</b>\n      <div class="mt-2 text-sm">${safe(p.v)}</div>\n      <div class="mt-3 flex items-center justify-between text-xs muted">\n        <span>${new Date(p.d).toLocaleString('pl-PL')}</span>\n        <button class="text-red-300" onclick="removePost(${n})">Usuń</button>\n      </div>\n    </article>\n  `).join('') : '<div class="panel p-4 text-sm muted">Brak postów. Dodaj pierwszy wpis.</div>';
 }
 
 function removePost(n) {
@@ -181,7 +195,7 @@ function removePost(n) {
   render();
 }
 
-// XP & REWARDS
+// XP & Rewards
 function getXP() {
   return Number(localStorage.getItem('tpXP') || 2450);
 }
@@ -201,7 +215,7 @@ function claimReward(label = 'Daily bonus', amount = 25) {
   toast('Dodano ' + amount + ' XP!');
 }
 
-// EVENTS (rozszerzenie rewards)
+// Events
 function ensureDefaultEvents() {
   if (localStorage.getItem('tpEvents')) return;
   const defaultEvents = [
@@ -223,18 +237,7 @@ function renderEvents() {
   el.innerHTML = events.map(e => {
     const key = 'claimed_event_' + e.id;
     const claimed = !!localStorage.getItem(key);
-    return `
-      <div class="flex items-center justify-between bg-slate-900/80 rounded-xl px-3 py-2 text-sm">
-        <div>
-          <div class="font-bold">${safe(e.title)}</div>
-          <div class="muted text-xs">${safe(e.desc)} • ${e.date}</div>
-        </div>
-        <div class="flex items-center gap-2">
-          <div class="text-emerald-300">+${e.xp} XP</div>
-          <button class="px-3 py-1 rounded-md ${claimed ? 'bg-slate-700 text-slate-400' : 'bg-violet-600 text-white'} text-sm" ${claimed ? 'disabled' : ''} onclick="claimEvent(${e.id})">${claimed ? 'Odebrane' : 'Odbierz'}</button>
-        </div>
-      </div>
-    `;
+    return `\n      <div class="flex items-center justify-between bg-slate-900/80 rounded-xl px-3 py-2 text-sm">\n        <div>\n          <div class="font-bold">${safe(e.title)}</div>\n          <div class="muted text-xs">${safe(e.desc)} • ${e.date}</div>\n        </div>\n        <div class="flex items-center gap-2">\n          <div class="text-emerald-300">+${e.xp} XP</div>\n          <button class="px-3 py-1 rounded-md ${claimed ? 'bg-slate-700 text-slate-400' : 'bg-violet-600 text-white'} text-sm" ${claimed ? 'disabled' : ''} onclick="claimEvent(${e.id})">${claimed ? 'Odebrane' : 'Odbierz'}</button>\n        </div>\n      </div>\n    `;
   }).join('');
 }
 
@@ -261,15 +264,10 @@ function renderLog() {
   const a = JSON.parse(localStorage.getItem('tpRewardLog') || '[]');
   const el = document.getElementById('reward-log');
   if (!el) return;
-  el.innerHTML = a.length ? a.slice(0, 8).map(x => `
-    <div class="flex justify-between bg-slate-900/80 rounded-xl px-3 py-2 text-sm">
-      <span>${safe(x.label)}</span>
-      <span class="text-emerald-300">+${x.amount} XP</span>
-    </div>
-  `).join('') : '<div class="text-sm muted">Brak aktywności nagród.</div>';
+  el.innerHTML = a.length ? a.slice(0, 8).map(x => `\n    <div class="flex justify-between bg-slate-900/80 rounded-xl px-3 py-2 text-sm">\n      <span>${safe(x.label)}</span>\n      <span class="text-emerald-300">+${x.amount} XP</span>\n    </div>\n  `).join('') : '<div class="text-sm muted">Brak aktywności nagród.</div>';
 }
 
-// UTILS
+// Utils
 function safe(s) {
   return String(s).replace(/[&<>\"']/g, m => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -284,7 +282,28 @@ function toast(t) {
   window.toastTimer = setTimeout(() => x.classList.add('hidden'), 2400);
 }
 
-// TABS
+// Navigation from bottom bar
+function navTo(target) {
+  // highlight buttons
+  document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+  const mapping = {
+    home: 'bn-home',
+    channel: 'bn-channel',
+    bitcoin: 'bn-bitcoin',
+    rewards: 'bn-rewards',
+    profile: 'bn-profile'
+  };
+  const id = mapping[target] || 'bn-home';
+  const btn = document.getElementById(id);
+  if (btn) btn.classList.add('active');
+
+  // show tab
+  if (target === 'crypto') switchTab({currentTarget: btn}, 'crypto');
+  else if (target === 'rewards') switchTab({currentTarget: btn}, 'rewards');
+  else switchTab({currentTarget: btn}, 'home');
+}
+
+// Tabs
 function switchTab(ev, tab) {
   document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden'));
   document.getElementById('tab-' + tab).classList.remove('hidden');
@@ -298,27 +317,21 @@ function switchTab(ev, tab) {
   }
 }
 
-// Logout (bez backendu) - po prostu odśwież aplikację / wyczyść dane użytkownika
+// Logout (local)
 const logoutBtn = document.getElementById('logout-btn');
-if (logoutBtn) {
-  logoutBtn.addEventListener('click', () => {
-    toast('Wylogowano');
-    setTimeout(() => location.reload(), 700);
-  });
-}
+if (logoutBtn) logoutBtn.addEventListener('click', () => { toast('Wylogowano'); setTimeout(() => location.reload(), 700); });
 
-// Inicjalizacja aplikacji przy starcie
+// Init
 function showApp() {
   ensureDefaultEvents();
   render();
   renderLog();
   renderEvents();
   const xp = getXP();
-  document.getElementById('xp-total').textContent = xp;
-  document.getElementById('xp-today').textContent = xp;
+  const xpTotalEl = document.getElementById('xp-total'); if (xpTotalEl) xpTotalEl.textContent = xp;
+  const xpTodayEl = document.getElementById('xp-today'); if (xpTodayEl) xpTodayEl.textContent = xp;
 }
 
-// Uruchom od razu - wersja bez formularza
 showApp();
 </script>
 
