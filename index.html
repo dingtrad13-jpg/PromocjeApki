@@ -1696,6 +1696,274 @@
     }
 
     window.addEventListener('load', seedInitialState);
-  </script>
+</script>
+<script>
+  (() => {
+    const ADMIN_ID = 7777540542;
+
+    const $ = (id) => document.getElementById(id);
+
+    function readStorage(key, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function writeStorage(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function showToast(message) {
+      const toast = $('#toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(window.tpToastTimer);
+      window.tpToastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function getTelegramUserId() {
+      try {
+        return window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 0;
+      } catch {
+        return 0;
+      }
+    }
+
+    function renderChannelFeed() {
+      const feed = $('#channel-feed');
+      if (!feed) return;
+
+      const posts = readStorage('admin-posts', []);
+      feed.innerHTML = '';
+
+      posts.forEach((post) => {
+        const card = document.createElement('div');
+        card.className = 'panel p-4 space-y-3';
+
+        const media = post.media ? `<img src="${post.media}" alt="post" class="w-full rounded-xl max-h-48 object-cover" />` : '';
+        const link = post.link ? `<a href="${post.link}" target="_blank" class="text-xs text-cyan-400 break-all">🔗 ${post.link}</a>` : '';
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-xs font-bold text-violet-400">${post.author || 'Admin'}</span>
+              <span class="text-[9px] text-slate-500 ml-2">${post.time || ''}</span>
+            </div>
+            <span class="text-[9px] bg-violet-600 text-white px-2 py-1 rounded">ADMIN</span>
+          </div>
+          <p class="text-sm text-slate-200">${post.content || ''}</p>
+          ${media}
+          ${link}
+        `;
+
+        feed.appendChild(card);
+      });
+    }
+
+    function renderTaskList() {
+      const list = $('#task-list');
+      if (!list) return;
+
+      const tasks = readStorage('admin-tasks', []);
+      list.innerHTML = '';
+
+      tasks.forEach((task) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800';
+
+        row.innerHTML = `
+          <div class="flex-1">
+            <span class="text-sm font-semibold text-white">${task.title}</span>
+            <span class="text-xs text-violet-400 ml-2">+${task.reward} ★</span>
+          </div>
+          <button
+            class="task-action bg-violet-600 hover:bg-violet-500 text-white text-xs px-3 py-1.5 rounded-lg transition"
+            data-reward="${task.reward}"
+            data-label="${task.title}"
+          >
+            Wykonaj
+          </button>
+        `;
+
+        list.appendChild(row);
+      });
+    }
+
+    function updateAdminStats() {
+      const total = $('#admin-total-stars-stat');
+      if (!total) return;
+
+      const tasks = readStorage('admin-tasks', []);
+      const totalStars = tasks.reduce((sum, task) => sum + (Number(task.reward) || 0), 0);
+      total.textContent = totalStars + ' ★';
+    }
+
+    function bindAdminPanel() {
+      const userId = getTelegramUserId();
+      const adminPanel = $('#admin-panel-container');
+      if (userId === ADMIN_ID && adminPanel) {
+        adminPanel.classList.remove('hidden');
+      }
+
+      const publishBtn = $('#publish-post-btn');
+      if (publishBtn) {
+        publishBtn.addEventListener('click', () => {
+          const input = $('#admin-post-input');
+          const media = $('#admin-media-input');
+          const link = $('#admin-link-input');
+
+          const content = (input?.value || '').trim();
+          if (!content) {
+            showToast('Wpisz treść posta!');
+            return;
+          }
+
+          const posts = readStorage('admin-posts', []);
+          posts.unshift({
+            author: 'Admin',
+            content,
+            media: (media?.value || '').trim(),
+            link: (link?.value || '').trim(),
+            time: new Date().toLocaleString('pl-PL', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          });
+
+          writeStorage('admin-posts', posts);
+
+          if (input) input.value = '';
+          if (media) media.value = '';
+          if (link) link.value = '';
+
+          renderChannelFeed();
+          updateAdminStats();
+          showToast('✓ Post opublikowany');
+        });
+      }
+
+      const saveEventBtn = $('#save-event-btn');
+      if (saveEventBtn) {
+        saveEventBtn.addEventListener('click', () => {
+          const title = $('#admin-event-title')?.value.trim() || '';
+          const desc = $('#admin-event-desc')?.value.trim() || '';
+          const reward = Number($('#admin-event-reward')?.value || 0);
+
+          if (!title) {
+            showToast('Podaj tytuł eventu!');
+            return;
+          }
+
+          const data = { title, description: desc, reward: reward || 50 };
+          writeStorage('live-event', data);
+
+          const titleEl = $('#live-event-title');
+          const descEl = $('#live-event-desc');
+          const actionBtn = $('#live-event-action-btn');
+
+          if (titleEl) titleEl.textContent = title;
+          if (descEl) descEl.textContent = desc || 'Wykonuj zadania i zbieraj gwiazdki.';
+          if (actionBtn) {
+            actionBtn.dataset.reward = String(data.reward);
+            actionBtn.textContent = `Dołącz +${data.reward} ★`;
+          }
+
+          showToast('✓ Event Live zapisany');
+        });
+      }
+
+      const addTaskBtn = $('#add-task-btn');
+      if (addTaskBtn) {
+        addTaskBtn.addEventListener('click', () => {
+          const title = $('#admin-new-task-title')?.value.trim() || '';
+          const reward = Number($('#admin-new-task-reward')?.value || 0);
+
+          if (!title || !reward) {
+            showToast('Podaj nazwę i wartość zadania!');
+            return;
+          }
+
+          const tasks = readStorage('admin-tasks', []);
+          tasks.push({ title, reward, id: Date.now() });
+          writeStorage('admin-tasks', tasks);
+
+          $('#admin-new-task-title').value = '';
+          $('#admin-new-task-reward').value = '';
+
+          renderTaskList();
+          updateAdminStats();
+          showToast('✓ Zadanie dodane');
+        });
+      }
+
+      const notifyBtn = document.createElement('button');
+      notifyBtn.type = 'button';
+      notifyBtn.className = 'w-full bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition active:scale-95 mt-2';
+      notifyBtn.textContent = 'Wyślij powiadomienie do użytkowników';
+      notifyBtn.addEventListener('click', () => {
+        const title = prompt('Tytuł powiadomienia:');
+        if (!title) return;
+
+        const message = prompt('Treść powiadomienia:');
+        if (!message) return;
+
+        const list = readStorage('user-notifications', []);
+        list.unshift({ title, message, time: new Date().toLocaleString('pl-PL') });
+        writeStorage('user-notifications', list);
+        showToast('✓ Powiadomienie wysłane');
+      });
+
+      const statsPanel = $('#admin-sub-stats');
+      if (statsPanel && !statsPanel.querySelector('.admin-notify-btn')) {
+        notifyBtn.classList.add('admin-notify-btn');
+        statsPanel.appendChild(notifyBtn);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      bindAdminPanel();
+      renderChannelFeed();
+      renderTaskList();
+      updateAdminStats();
+
+      const live = readStorage('live-event', null);
+      if (live) {
+        const titleEl = $('#live-event-title');
+        const descEl = $('#live-event-desc');
+        const actionBtn = $('#live-event-action-btn');
+
+        if (titleEl) titleEl.textContent = live.title || '';
+        if (descEl) descEl.textContent = live.description || '';
+        if (actionBtn) actionBtn.dataset.reward = String(live.reward || 50);
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      const btn = event.target.closest('.task-action');
+      if (!btn) return;
+
+      const reward = Number(btn.dataset.reward || 0);
+      const label = btn.dataset.label || 'Zadanie';
+
+      const current = Number(localStorage.getItem('user-stars') || 0);
+      const next = current + reward;
+      localStorage.setItem('user-stars', String(next));
+
+      const total = document.getElementById('stars-total');
+      if (total) total.textContent = String(next);
+
+      showToast(`✓ +${reward} ★ za ${label}`);
+    });
+  })();
+</script>
 </body>
 </html>
