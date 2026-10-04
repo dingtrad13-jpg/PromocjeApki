@@ -1,0 +1,4 @@
+# Zmieniona nazwa pliku z powodu konfliktu merge
+# Poprzedni plik paneladministratora kolidował z katalogiem paneladministratora/ w gałęzi feature/admin-panel-core
+
+To jest plik tymczasowy, aby usunąć konflikt nazw przed scaleniem gałęzi.
