@@ -1,12 +1,24 @@
 /**
  * Panel administratora / admin-core.js
  * Modular admin frontend package.
- * This file is created to be copied into a separate repo or later merged into main.
+ * Backend-ready version: only requires replacing the storage adapter later.
  */
 (function () {
   'use strict';
 
   const ADMIN_ID = '7777540542';
+
+  // =============================
+  // BACKEND READY CONFIG
+  // =============================
+  // To enable real backend later, set:
+  // window.AdminPanelConfig = { backendEnabled: true, baseUrl: 'https://api.example.com' };
+  const BackendConfig = {
+    backendEnabled: !!(window.AdminPanelConfig && window.AdminPanelConfig.backendEnabled),
+    baseUrl: (window.AdminPanelConfig && window.AdminPanelConfig.baseUrl) || '',
+    endpointPrefix: (window.AdminPanelConfig && window.AdminPanelConfig.endpointPrefix) || '/api/admin'
+  };
+
   const STORAGE = {
     materials: 'tp_admin_materials',
     tasks: 'tp_admin_tasks',
@@ -14,7 +26,19 @@
     event: 'tp_admin_event'
   };
 
+  // =============================
+  // STORAGE ADAPTER
+  // =============================
+  // Current version uses localStorage as default.
+  // Later, when backend is connected, replace this adapter with endpoint calls.
   function read(key, fallback) {
+    if (BackendConfig.backendEnabled) {
+      // TODO: Replace this with fetch(`${BackendConfig.baseUrl}${BackendConfig.endpointPrefix}/${key}`)
+      // Example:
+      // return apiRead(key, fallback)
+      return fallback;
+    }
+
     try {
       const raw = localStorage.getItem(key);
       return raw ? JSON.parse(raw) : fallback;
@@ -24,12 +48,29 @@
   }
 
   function write(key, value) {
+    if (BackendConfig.backendEnabled) {
+      // TODO: Replace this with fetch(`${BackendConfig.baseUrl}${BackendConfig.endpointPrefix}/${key}`, { method: 'POST', body: JSON.stringify(value) })
+      // Example:
+      // return apiWrite(key, value)
+      return true;
+    }
+
     try {
       localStorage.setItem(key, JSON.stringify(value));
       return true;
     } catch (_) {
       return false;
     }
+  }
+
+  function apiRead(key, fallback) {
+    // Placeholder for future backend.
+    return fallback;
+  }
+
+  function apiWrite(key, value) {
+    // Placeholder for future backend.
+    return true;
   }
 
   function getCurrentUserId() {
@@ -368,4 +409,3 @@
     init();
   }
 })();
-
